@@ -1,0 +1,15 @@
+<odoo>
+    <record id="view_delivery_carrier_form_postnl" model="ir.ui.view">
+        <field name="name">delivery.carrier.form.postnl</field>
+        <field name="model">delivery.carrier</field>
+        <field name="inherit_id" ref="delivery.view_delivery_carrier_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='delivery_type']" position="after">
+                <group attrs="{'invisible': [('delivery_type','!=','postnl')]}">
+                    <field name="postnl_wbs_rule_id"/>
+                    <label string="PostNL carrier uses global settings under General Settings → PostNL."/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

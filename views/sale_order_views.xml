@@ -1,0 +1,19 @@
+<odoo>
+    <record id="view_order_form_postnl" model="ir.ui.view">
+        <field name="name">sale.order.form.postnl</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/notebook/page[@name='delivery']" position="inside">
+                <group string="PostNL">
+                    <field name="postnl_delivery_option"/>
+                    <field name="postnl_pickup_location_code"/>
+                    <field name="postnl_pickup_location_name"/>
+                    <field name="postnl_pickup_address"/>
+                    <field name="postnl_pickup_postcode"/>
+                    <field name="postnl_pickup_city"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

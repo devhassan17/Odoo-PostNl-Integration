@@ -1,0 +1,58 @@
+<odoo>
+    <record id="view_postnl_shipment_tree" model="ir.ui.view">
+        <field name="name">postnl.shipment.tree</field>
+        <field name="model">postnl.shipment</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="picking_id"/>
+                <field name="barcode"/>
+                <field name="state"/>
+                <field name="track_trace_url"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_postnl_shipment_form" model="ir.ui.view">
+        <field name="name">postnl.shipment.form</field>
+        <field name="model">postnl.shipment</field>
+        <field name="arch" type="xml">
+            <form string="PostNL Shipment">
+                <header>
+                    <button name="action_create_label" type="object" string="Create / Fetch Label" class="btn-primary" attrs="{'invisible': [('state','=','confirmed')]}"/>
+                    <button name="action_download_label" type="object" string="Download Label" attrs="{'invisible': [('label_pdf','=',False)]}"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="picking_id"/>
+                            <field name="barcode"/>
+                            <field name="track_trace_url"/>
+                            <field name="label_description"/>
+                        </group>
+                        <group string="Options">
+                            <field name="package_type"/>
+                            <field name="only_recipient"/>
+                            <field name="signature"/>
+                            <field name="insured"/>
+                            <field name="insured_amount"/>
+                            <field name="multi_collo"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="label_pdf" filename="barcode"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_postnl_shipments" model="ir.actions.act_window">
+        <field name="name">PostNL Shipments</field>
+        <field name="res_model">postnl.shipment</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_postnl_shipments" name="Shipments" parent="menu_postnl_root" action="action_postnl_shipments"/>
+</odoo>

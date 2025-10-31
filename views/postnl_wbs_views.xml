@@ -1,0 +1,43 @@
+<odoo>
+    <record id="view_postnl_wbs_rule_tree" model="ir.ui.view">
+        <field name="name">postnl.wbs.rule.tree</field>
+        <field name="model">postnl.wbs.rule</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="shipping_code"/>
+                <field name="weight_max"/>
+                <field name="country_ids" widget="many2many_tags"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_postnl_wbs_rule_form" model="ir.ui.view">
+        <field name="name">postnl.wbs.rule.form</field>
+        <field name="model">postnl.wbs.rule</field>
+        <field name="arch" type="xml">
+            <form string="PostNL WBS Rule">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="shipping_code"/>
+                        <field name="weight_max"/>
+                        <field name="country_ids" widget="many2many_tags"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <menuitem id="menu_postnl_root" name="PostNL" parent="stock.menu_stock_root"/>
+
+    <record id="action_postnl_wbs_rules" model="ir.actions.act_window">
+        <field name="name">WBS Rules</field>
+        <field name="res_model">postnl.wbs.rule</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_postnl_wbs_rules" name="WBS Rules" parent="menu_postnl_root" action="action_postnl_wbs_rules"/>
+</odoo>
