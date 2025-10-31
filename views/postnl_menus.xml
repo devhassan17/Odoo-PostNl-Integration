@@ -1,6 +1,8 @@
 <odoo>
+    <!-- Top-level PostNL app (appears on the Apps bar). 
+         Add an icon at postnl_base/static/description/icon.png to brand it. -->
     <menuitem id="menu_postnl_root"
               name="PostNL"
-              parent="stock.menu_stock_root"
-              sequence="60"/>
+              sequence="15"
+              web_icon="postnl_base,static/description/icon.png"/>
 </odoo>

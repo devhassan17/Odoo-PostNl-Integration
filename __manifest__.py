@@ -1,5 +1,5 @@
 {
-    "name": "Odoo-Postnl-Integration",
+    "name": "Odoo-PostNl-Integration",
     "summary": "Connect Odoo 18 to PostNL: label creation, delivery options, pickup points, tracking, WBS rules.",
     "version": "18.0.1.0.0",
     "author": "You + ChatGPT",
@@ -11,10 +11,10 @@
         "security/ir.model.access.csv",
         "data/ir_cron.xml",
 
-        # NEW: Ensure the root menu is created before any child menu uses it
+        # Root app menu FIRST so other menus can reference it
         "views/postnl_menus.xml",
 
-        # Views (can safely reference menu_postnl_root now)
+        # Views and actions (they will place their menu items under the PostNL app)
         "views/postnl_settings_views.xml",
         "views/postnl_wbs_views.xml",
         "views/postnl_shipment_views.xml",
@@ -30,5 +30,5 @@
         ]
     },
     "installable": True,
-    "application": True
+    "application": True  # <-- this makes it a top-level App with its own icon
 }
