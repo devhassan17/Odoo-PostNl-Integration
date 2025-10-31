@@ -5,9 +5,10 @@
         <field name="inherit_id" ref="delivery.view_delivery_carrier_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='delivery_type']" position="after">
-                <group attrs="{'invisible': [('delivery_type','!=','postnl')]}">
+                <!-- Odoo 18+: replace attrs with boolean invisible -->
+                <group invisible="record.delivery_type != 'postnl'">
                     <field name="postnl_wbs_rule_id"/>
-                    <label string="PostNL carrier uses global settings under General Settings → PostNL."/>
+                    <label string="PostNL carrier uses global settings under PostNL → Settings."/>
                 </group>
             </xpath>
         </field>

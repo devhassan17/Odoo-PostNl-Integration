@@ -19,8 +19,16 @@
         <field name="arch" type="xml">
             <form string="PostNL Shipment">
                 <header>
-                    <button name="action_create_label" type="object" string="Create / Fetch Label" class="btn-primary" attrs="{'invisible': [('state','=','confirmed')]}"/>
-                    <button name="action_download_label" type="object" string="Download Label" attrs="{'invisible': [('label_pdf','=',False)]}"/>
+                    <!-- Odoo 18+: use boolean expressions instead of attrs/states -->
+                    <button name="action_create_label"
+                            type="object"
+                            string="Create / Fetch Label"
+                            class="btn-primary"
+                            invisible="record.state == 'confirmed'"/>
+                    <button name="action_download_label"
+                            type="object"
+                            string="Download Label"
+                            invisible="not record.label_pdf"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
