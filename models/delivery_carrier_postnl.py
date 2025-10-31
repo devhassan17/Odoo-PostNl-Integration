@@ -4,7 +4,11 @@ from odoo.exceptions import UserError
 class DeliveryCarrier(models.Model):
     _inherit = "delivery.carrier"
 
-    delivery_type = fields.Selection(selection_add=[("postnl", "PostNL")], ondelete={"postnl": "set default"})
+    # FIX: add ondelete policy required by Odoo 18 for required selection fields
+    delivery_type = fields.Selection(
+        selection_add=[("postnl", "PostNL")],
+        ondelete={"postnl": "set default"}
+    )
     postnl_wbs_rule_id = fields.Many2one("postnl.wbs.rule", string="Default WBS Rule")
 
     def _postnl_client(self):
@@ -14,20 +18,18 @@ class DeliveryCarrier(models.Model):
         self.ensure_one()
         if self.delivery_type != "postnl":
             return super().rate_shipment(order)
-        # Basic flat/fallback. You can use WBS rules or API here.
-        # Example: find rule by country & weight and maybe set price
+        # Placeholder logic — replace with your real weight calc & pricing
         country_code = order.partner_shipping_id.country_id.code or "NL"
-        weight = sum(order.order_line.mapped("product_uom_qty"))  # naive; replace with package weight
+        weight = sum(order.order_line.mapped("product_uom_qty"))  # TODO: use real weight
         rule = self.postnl_wbs_rule_id or self.env["postnl.wbs.rule"].search([], limit=1)
         price = self._compute_price_by_rule(rule, country_code, weight) if rule else 0.0
         return {"success": True, "price": price, "error_message": False, "warning_message": False}
 
     def _compute_price_by_rule(self, rule, country_code, weight):
-        # Placeholder pricing: implement as needed
+        # TODO: implement your pricing based on rule/country/weight
         return 0.0
 
     def send_shipping(self, pickings):
-        # Called from picking -> Put in pack -> Validate
         res = []
         client = self._postnl_client()
         if not client.is_configured():
@@ -38,11 +40,10 @@ class DeliveryCarrier(models.Model):
                 "package_type": "package",
             })
             shipment._create_or_fetch_label()
-            result = {
+            res.append({
                 "exact_price": 0.0,
                 "tracking_number": shipment.barcode,
-            }
-            res.append(result)
+            })
         return res
 
     def get_tracking_link(self, picking):
