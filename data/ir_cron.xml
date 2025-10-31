@@ -6,7 +6,6 @@
         <field name="code">env['postnl.client']._cron_update_tracking()</field>
         <field name="interval_number">4</field>
         <field name="interval_type">hours</field>
-        <!-- Odoo 18: 'numbercall' removed -->
         <field name="active">False</field>
     </record>
 </odoo>

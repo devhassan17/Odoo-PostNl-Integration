@@ -19,7 +19,6 @@
         <field name="arch" type="xml">
             <form string="PostNL Shipment">
                 <header>
-                    <!-- Odoo 18+: use boolean expressions without 'record.' -->
                     <button name="action_create_label"
                             type="object"
                             string="Create / Fetch Label"

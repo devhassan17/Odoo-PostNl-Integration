@@ -2,10 +2,8 @@
     <record id="view_order_form_postnl" model="ir.ui.view">
         <field name="name">sale.order.form.postnl</field>
         <field name="model">sale.order</field>
-        <!-- Keep inheriting the standard Sale Order form -->
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <!-- Odoo 18: don't target a specific page; add our own page under the notebook -->
             <xpath expr="//sheet/notebook" position="inside">
                 <page name="postnl" string="PostNL">
                     <group>

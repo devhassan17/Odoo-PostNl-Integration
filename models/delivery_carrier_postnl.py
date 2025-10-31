@@ -4,7 +4,7 @@ from odoo.exceptions import UserError
 class DeliveryCarrier(models.Model):
     _inherit = "delivery.carrier"
 
-    # FIX: add ondelete policy required by Odoo 18 for required selection fields
+    # Odoo 18: required selection adds must define ondelete policy
     delivery_type = fields.Selection(
         selection_add=[("postnl", "PostNL")],
         ondelete={"postnl": "set default"}
@@ -18,15 +18,15 @@ class DeliveryCarrier(models.Model):
         self.ensure_one()
         if self.delivery_type != "postnl":
             return super().rate_shipment(order)
-        # Placeholder logic — replace with your real weight calc & pricing
+        # Placeholder pricing — adapt to your logic
         country_code = order.partner_shipping_id.country_id.code or "NL"
-        weight = sum(order.order_line.mapped("product_uom_qty"))  # TODO: use real weight
+        weight = sum(order.order_line.mapped("product_uom_qty"))  # TODO: real weight
         rule = self.postnl_wbs_rule_id or self.env["postnl.wbs.rule"].search([], limit=1)
         price = self._compute_price_by_rule(rule, country_code, weight) if rule else 0.0
         return {"success": True, "price": price, "error_message": False, "warning_message": False}
 
     def _compute_price_by_rule(self, rule, country_code, weight):
-        # TODO: implement your pricing based on rule/country/weight
+        # TODO: implement
         return 0.0
 
     def send_shipping(self, pickings):
@@ -40,10 +40,7 @@ class DeliveryCarrier(models.Model):
                 "package_type": "package",
             })
             shipment._create_or_fetch_label()
-            res.append({
-                "exact_price": 0.0,
-                "tracking_number": shipment.barcode,
-            })
+            res.append({"exact_price": 0.0, "tracking_number": shipment.barcode})
         return res
 
     def get_tracking_link(self, picking):

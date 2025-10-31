@@ -1,12 +1,5 @@
 <odoo>
-    <template id="postnl_checkout_inject" inherit_id="website_sale.cart_delivery" name="PostNL Options in Checkout">
-        <xpath expr="//div[@id='delivery_carrier']" position="after">
-            <t t-if="request.website and True">
-                <div id="postnl-options" class="mt-3" data-url-options="/postnl/options" data-url-pickups="/postnl/pickups">
-                    <h5>PostNL delivery options</h5>
-                    <div class="postnl-options-container" />
-                </div>
-            </t>
-        </xpath>
-    </template>
+    <!-- No inheritance of website_sale templates (IDs changed in Odoo 18).
+         JS injects the PostNL block on checkout pages. -->
+    <template id="postnl_checkout_placeholder" name="PostNL Checkout Placeholder"/>
 </odoo>

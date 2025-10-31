@@ -1,5 +1,4 @@
 <odoo>
-    <!-- Standalone PostNL settings form (no inherit_id) -->
     <record id="view_res_config_settings_postnl_form" model="ir.ui.view">
         <field name="name">res.config.settings.postnl.form</field>
         <field name="model">res.config.settings</field>
@@ -38,12 +37,10 @@
                         <field name="postnl_morning_delivery"/>
                         <field name="postnl_saturday_delivery"/>
                         <field name="postnl_cutoff_hour"/>
-                        <!-- helper text -->
                         <div class="o_form_label">Checkout delivery options &amp; cut-off.</div>
                     </group>
                 </sheet>
                 <footer>
-                    <!-- res.config.settings uses 'execute' to persist config_parameter values -->
                     <button string="Save" type="object" name="execute" class="btn-primary"/>
                     <button string="Cancel" special="cancel" class="btn-secondary"/>
                 </footer>
@@ -51,7 +48,6 @@
         </field>
     </record>
 
-    <!-- Window action to open the standalone settings wizard -->
     <record id="action_postnl_settings" model="ir.actions.act_window">
         <field name="name">PostNL Settings</field>
         <field name="res_model">res.config.settings</field>
@@ -61,7 +57,6 @@
         <field name="context">{}</field>
     </record>
 
-    <!-- Menu entry under the PostNL root menu -->
     <menuitem id="menu_postnl_settings"
               name="Settings"
               parent="menu_postnl_root"
