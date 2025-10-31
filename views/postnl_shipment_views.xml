@@ -19,16 +19,16 @@
         <field name="arch" type="xml">
             <form string="PostNL Shipment">
                 <header>
-                    <!-- Odoo 18+: use boolean expressions instead of attrs/states -->
+                    <!-- Odoo 18+: use boolean expressions without 'record.' -->
                     <button name="action_create_label"
                             type="object"
                             string="Create / Fetch Label"
                             class="btn-primary"
-                            invisible="record.state == 'confirmed'"/>
+                            invisible="state == 'confirmed'"/>
                     <button name="action_download_label"
                             type="object"
                             string="Download Label"
-                            invisible="not record.label_pdf"/>
+                            invisible="not label_pdf"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
