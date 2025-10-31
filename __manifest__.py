@@ -1,5 +1,5 @@
 {
-    "name": "Odoo-PostNl-Integration",
+    "name": "PostNL Base (Odoo 18)",
     "summary": "Connect Odoo 18 to PostNL: label creation, delivery options, pickup points, tracking, WBS rules.",
     "version": "18.0.1.0.0",
     "author": "You + ChatGPT",

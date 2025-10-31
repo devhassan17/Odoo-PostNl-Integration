@@ -4,7 +4,7 @@ from odoo.exceptions import UserError
 class DeliveryCarrier(models.Model):
     _inherit = "delivery.carrier"
 
-    delivery_type = fields.Selection(selection_add=[("postnl", "PostNL")])
+    delivery_type = fields.Selection(selection_add=[("postnl", "PostNL")], ondelete={"postnl": "set default"})
     postnl_wbs_rule_id = fields.Many2one("postnl.wbs.rule", string="Default WBS Rule")
 
     def _postnl_client(self):
