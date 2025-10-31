@@ -38,7 +38,8 @@
                         <field name="postnl_morning_delivery"/>
                         <field name="postnl_saturday_delivery"/>
                         <field name="postnl_cutoff_hour"/>
-                        <label string="Checkout delivery options &amp; cut-off."/>
+                        <!-- INFO helper using label style without a 'for' -->
+                        <label class="o_form_label">Checkout delivery options &amp; cut-off.</label>
                     </group>
                 </sheet>
                 <footer>
