@@ -1,15 +1,15 @@
 <odoo>
-    <record id="view_postnl_wbs_rule_tree" model="ir.ui.view">
-        <field name="name">postnl.wbs.rule.tree</field>
+    <record id="view_postnl_wbs_rule_list" model="ir.ui.view">
+        <field name="name">postnl.wbs.rule.list</field>
         <field name="model">postnl.wbs.rule</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name"/>
                 <field name="shipping_code"/>
                 <field name="weight_max"/>
                 <field name="country_ids" widget="many2many_tags"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -34,10 +34,9 @@
     <record id="action_postnl_wbs_rules" model="ir.actions.act_window">
         <field name="name">WBS Rules</field>
         <field name="res_model">postnl.wbs.rule</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
-    <!-- Child menu placed under the PostNL root menu created in postnl_menus.xml -->
     <menuitem id="menu_postnl_wbs_rules"
               name="WBS Rules"
               parent="menu_postnl_root"

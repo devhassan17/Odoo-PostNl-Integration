@@ -1,5 +1,4 @@
 <odoo>
-    <!-- Root menu under Inventory/Stock -->
     <menuitem id="menu_postnl_root"
               name="PostNL"
               parent="stock.menu_stock_root"

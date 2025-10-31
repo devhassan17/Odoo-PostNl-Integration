@@ -1,15 +1,15 @@
 <odoo>
-    <record id="view_postnl_shipment_tree" model="ir.ui.view">
-        <field name="name">postnl.shipment.tree</field>
+    <record id="view_postnl_shipment_list" model="ir.ui.view">
+        <field name="name">postnl.shipment.list</field>
         <field name="model">postnl.shipment</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name"/>
                 <field name="picking_id"/>
                 <field name="barcode"/>
                 <field name="state"/>
                 <field name="track_trace_url"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -51,8 +51,12 @@
     <record id="action_postnl_shipments" model="ir.actions.act_window">
         <field name="name">PostNL Shipments</field>
         <field name="res_model">postnl.shipment</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
-    <menuitem id="menu_postnl_shipments" name="Shipments" parent="menu_postnl_root" action="action_postnl_shipments"/>
+    <menuitem id="menu_postnl_shipments"
+              name="Shipments"
+              parent="menu_postnl_root"
+              action="action_postnl_shipments"
+              sequence="20"/>
 </odoo>
