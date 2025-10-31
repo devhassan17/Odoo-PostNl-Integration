@@ -31,13 +31,16 @@
         </field>
     </record>
 
-    <menuitem id="menu_postnl_root" name="PostNL" parent="stock.menu_stock_root"/>
-
     <record id="action_postnl_wbs_rules" model="ir.actions.act_window">
         <field name="name">WBS Rules</field>
         <field name="res_model">postnl.wbs.rule</field>
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem id="menu_postnl_wbs_rules" name="WBS Rules" parent="menu_postnl_root" action="action_postnl_wbs_rules"/>
+    <!-- Child menu placed under the PostNL root menu created in postnl_menus.xml -->
+    <menuitem id="menu_postnl_wbs_rules"
+              name="WBS Rules"
+              parent="menu_postnl_root"
+              action="action_postnl_wbs_rules"
+              sequence="10"/>
 </odoo>

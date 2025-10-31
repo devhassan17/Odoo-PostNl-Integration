@@ -38,7 +38,7 @@
                         <field name="postnl_morning_delivery"/>
                         <field name="postnl_saturday_delivery"/>
                         <field name="postnl_cutoff_hour"/>
-                        <!-- INFO helper styled like a label but not using <label> -->
+                        <!-- helper text -->
                         <div class="o_form_label">Checkout delivery options &amp; cut-off.</div>
                     </group>
                 </sheet>
@@ -61,7 +61,7 @@
         <field name="context">{}</field>
     </record>
 
-    <!-- Menu entry under your existing PostNL root menu -->
+    <!-- Menu entry under the PostNL root menu -->
     <menuitem id="menu_postnl_settings"
               name="Settings"
               parent="menu_postnl_root"
