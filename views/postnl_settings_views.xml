@@ -67,7 +67,8 @@
                                 </div>
                                 <div class="o_setting_right">
                                     <label for="postnl_evening_delivery"/>
-                                    <div class="text-muted">Checkout delivery options & cut-off.</div>
+                                    <!-- FIX: escape & -->
+                                    <div class="text-muted">Checkout delivery options &amp; cut-off.</div>
                                 </div>
                             </div>
                         </div>
