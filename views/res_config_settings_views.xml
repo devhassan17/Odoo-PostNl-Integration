@@ -8,8 +8,8 @@
       <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
 
       <field name="arch" type="xml">
-        <!-- Insert our block into the main settings container -->
-        <xpath expr="//div[hasclass('settings')]" position="inside">
+        <!-- Safe, stable anchor -->
+        <xpath expr="//sheet" position="inside">
           <div class="app_settings_block" string="PostNL" data-key="odoo_postnl_integration">
             <h2>Odoo-PostNL-Integration</h2>
             <div class="row mt16 o_settings_container">
@@ -49,7 +49,7 @@
       </field>
     </record>
 
-    <!-- Settings action (no module-context dependency on folder name) -->
+    <!-- Action + Menu (unchanged, included here for completeness) -->
     <record id="action_postnl_settings" model="ir.actions.act_window">
       <field name="name">Settings</field>
       <field name="res_model">res.config.settings</field>
