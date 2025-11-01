@@ -6,7 +6,7 @@
       <field name="inherit_id" ref="base.res_config_settings_view_form"/>
       <field name="arch" type="xml">
         <xpath expr="//form" position="inside">
-          <app string="Odoo-PostNL-Integration" name="odoo_postnl_integration" data-key="odoo_postnl_integration">
+          <app string="PostNL Logistics Hub" name="postnl_logistics_hub" data-key="postnl_logistics_hub">
             <block title="PostNL Connection">
               <setting string="SFTP Host / Port">
                 <div class="row">
@@ -28,6 +28,7 @@
                 </div>
               </setting>
             </block>
+
             <block title="Behavior">
               <setting string="Defaults &amp; Templates">
                 <div class="row">
@@ -44,18 +45,18 @@
                 </div>
               </setting>
             </block>
+
+            <block title="Diagnostics &amp; Tests">
+              <setting string="One-click actions">
+                <button name="action_postnl_test_sftp" type="object" string="Test SFTP" class="btn-secondary me-2"/>
+                <button name="action_postnl_scan_now"  type="object" string="Scan Sales Orders" class="me-2"/>
+                <button name="action_postnl_export_now" type="object" string="Export Queued Orders" class="me-2"/>
+                <button name="action_postnl_import_now" type="object" string="Import Shipments"/>
+              </setting>
+            </block>
           </app>
         </xpath>
       </field>
     </record>
-    <record id="action_postnl_settings" model="ir.actions.act_window">
-      <field name="name">Settings</field>
-      <field name="res_model">res.config.settings</field>
-      <field name="view_mode">form</field>
-      <field name="target">current</field>
-    </record>
-    <menuitem id="menu_postnl_settings" name="Settings"
-              parent="menu_postnl_cfg" action="action_postnl_settings"
-              sequence="90" groups="group_postnl_manager"/>
   </data>
 </odoo>

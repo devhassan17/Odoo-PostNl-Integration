@@ -1,8 +1,5 @@
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
-import base64
-import logging
-
+import base64, logging
 _logger = logging.getLogger(__name__)
 
 try:
@@ -16,6 +13,7 @@ class PostnlService(models.AbstractModel):
     _description = "PostNL Service Layer (exports/imports)"
     _inherit = ["mail.thread"]
 
+    # ---------- EXPORTS ----------
     def _export_orders_to_postnl(self, orders):
         self = self.sudo()
         count = 0
@@ -27,14 +25,15 @@ class PostnlService(models.AbstractModel):
                 self._send_file("orders", f"order_{order.name.replace('/', '_')}.xml", xml.encode("utf-8"))
                 self._attach_payload(order, xml, fname=f"order_{order.name.replace('/', '_')}.xml")
                 order.action_mark_exported()
-                _logger.info("PostNL EXPORT order OK: %s", order.name)
+                _logger.info("PostNL|event=export_order status=ok order=%s", order.name)
                 count += 1
             except Exception as e:
-                _logger.exception("PostNL EXPORT order FAILED: %s", order.name)
+                _logger.error("PostNL|event=export_order status=fail order=%s err=%s", order.name, e)
                 order._post_single_error(str(e))
-        _logger.info("PostNL EXPORT summary: %s exported", count)
+        _logger.info("PostNL|event=export_orders status=summary exported=%s", count)
         return count
 
+    # ---------- IMPORTS ----------
     def _import_shipments_update_orders(self):
         done = 0
         staged = self.env["postnl.order"].search([("state", "=", "exported")], limit=50)
@@ -43,28 +42,30 @@ class PostnlService(models.AbstractModel):
                 if not rec.tracking_number:
                     rec.tracking_number = f"3S{rec.id:012d}NL"
                 rec.action_mark_shipped()
-                _logger.info("PostNL IMPORT shipment OK: %s -> %s", rec.name, rec.tracking_number)
+                _logger.info("PostNL|event=import_shipment status=ok order=%s tracking=%s",
+                             rec.name, rec.tracking_number)
                 done += 1
             except Exception as e:
-                _logger.exception("PostNL IMPORT shipment FAILED: %s", rec.name)
+                _logger.error("PostNL|event=import_shipment status=fail order=%s err=%s", rec.name, e)
                 rec._post_single_error(str(e))
-        _logger.info("PostNL IMPORT shipments summary: %s marked shipped", done)
+        _logger.info("PostNL|event=import_shipments status=summary shipped=%s", done)
         return done
 
+    # ---------- PRODUCTS & STOCK ----------
     @api.model
     def _cron_export_products(self, limit=200):
         prods = self.env["product.template"].search([("sale_ok", "=", True)], limit=limit)
         if not prods:
-            _logger.info("PostNL PRODUCT EXPORT: nothing to export")
+            _logger.info("PostNL|event=export_products status=skip reason=empty")
             return 0
         xml = self._build_products_xml(prods)
         try:
             self._send_file("products", "products_export.xml", xml.encode("utf-8"))
             self._attach_generic(xml, name="products_export.xml", model="product.template", res_id=prods[0].id)
-            _logger.info("PostNL PRODUCT EXPORT: %s products exported", len(prods))
+            _logger.info("PostNL|event=export_products status=ok count=%s", len(prods))
             return len(prods)
-        except Exception:
-            _logger.exception("PostNL PRODUCT EXPORT failed")
+        except Exception as e:
+            _logger.error("PostNL|event=export_products status=fail err=%s", e)
             return 0
 
     @api.model
@@ -72,9 +73,10 @@ class PostnlService(models.AbstractModel):
         now = fields.Datetime.now()
         pts = self.env["product.template"].search([("sale_ok", "=", True)], limit=200)
         pts.write({"website_published": True})
-        _logger.info("PostNL INVENTORY IMPORT (demo): touched %s products at %s", len(pts), now)
+        _logger.info("PostNL|event=import_inventory status=ok touched=%s at=%s", len(pts), now)
         return len(pts)
 
+    # ---------- Attach helpers ----------
     def _attach_payload(self, order, data_str, fname="payload.xml"):
         data = data_str.encode("utf-8") if isinstance(data_str, str) else data_str
         self.env["ir.attachment"].sudo().create({
@@ -97,6 +99,7 @@ class PostnlService(models.AbstractModel):
             "mimetype": "application/xml",
         })
 
+    # ---------- XML builders ----------
     def _build_order_xml(self, order):
         partner = order.sale_id.partner_shipping_id
         lines = order.sale_id.order_line.filtered(lambda l: not l.display_type)
@@ -155,30 +158,35 @@ class PostnlService(models.AbstractModel):
               <length>{(getattr(p, 'length', 0.0) or 0.0):.3f}</length>
             </item>
             """)
-        xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+        return f"""<?xml version="1.0" encoding="UTF-8"?>
 <items>
   {''.join(items)}
 </items>"""
-        return xml
 
+    # ---------- SFTP ----------
     def _send_file(self, channel, filename, bytes_data):
         ICP = self.env["ir.config_parameter"].sudo()
         host = ICP.get_param("postnl.sftp_host")
-        port = int(ICP.get_param("postnl_sftp_port", 22) or 22)
-        user = ICP.get_param("postnl_sftp_user")
-        passwd = ICP.get_param("postnl_sftp_password")
+        port = int(ICP.get_param("postnl.sftp_port", 22) or 22)
+        # FIX: correct param keys (with dots)
+        user = ICP.get_param("postnl.sftp_user")
+        passwd = ICP.get_param("postnl.sftp_password")
         remote_map = {
             "orders": ICP.get_param("postnl.remote_order_path", "/in/orders"),
             "products": ICP.get_param("postnl.remote_order_path", "/in/orders"),
         }
         remote_dir = remote_map.get(channel, "/in/orders")
-        _logger.info("PostNL SFTP send (%s): host=%s port=%s path=%s file=%s", channel, host, port, remote_dir, filename)
+
+        _logger.info("PostNL|event=sftp_send channel=%s host=%s port=%s remote=%s file=%s",
+                     channel, host, port, remote_dir, filename)
+
         if not host or not user or not passwd:
-            _logger.warning("PostNL SFTP disabled (missing credentials). Simulating send for %s", filename)
+            _logger.warning("PostNL|event=sftp_send status=simulated reason=missing_credentials file=%s", filename)
             return True
         if not paramiko:
-            _logger.warning("Paramiko not installed; simulated SFTP send for %s", filename)
+            _logger.warning("PostNL|event=sftp_send status=simulated reason=paramiko_missing file=%s", filename)
             return True
+
         try:
             transport = paramiko.Transport((host, port))
             transport.connect(username=user, password=passwd)
@@ -192,8 +200,8 @@ class PostnlService(models.AbstractModel):
                 f.write(bytes_data)
             sftp.close()
             transport.close()
-            _logger.info("PostNL SFTP send OK: %s/%s", remote_dir, filename)
+            _logger.info("PostNL|event=sftp_send status=ok remote=%s/%s", remote_dir, filename)
             return True
-        except Exception:
-            _logger.exception("PostNL SFTP send FAILED: %s/%s", remote_dir, filename)
+        except Exception as e:
+            _logger.error("PostNL|event=sftp_send status=fail remote=%s/%s err=%s", remote_dir, filename, e)
             raise

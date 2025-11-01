@@ -1,10 +1,10 @@
 <odoo>
   <data>
-    <!-- Root App menu (load this file early; uses Monta icon for launcher tile) -->
+    <!-- Root App menu (launcher tile uses this icon & label) -->
     <menuitem id="menu_postnl_root"
-              name="Odoo-PostNL-Integration"
+              name="PostNL Logistics Hub"
               sequence="15"
-              web_icon="~/static/description/icon.png"/>
+              web_icon="monta,static/description/icon.png"/>
 
     <!-- Sections -->
     <menuitem id="menu_postnl_ops" name="Operations" parent="menu_postnl_root" sequence="10"/>
@@ -28,7 +28,7 @@
     <menuitem id="menu_postnl_rules" name="Shipping Rules"
               parent="menu_postnl_cfg" action="action_postnl_rules" sequence="10"/>
 
-    <!-- Quick testers -->
+    <!-- Quick testers in Operations -->
     <record id="action_postnl_run_export_products" model="ir.actions.server">
       <field name="name">Export Products (Now)</field>
       <field name="model_id" ref="model_postnl_order"/>
@@ -47,14 +47,12 @@
     <menuitem id="menu_postnl_run_import_inventory" name="Import Inventory (Now)"
               parent="menu_postnl_ops" action="action_postnl_run_import_inventory" sequence="50"/>
 
-    <!-- Settings shortcut (visible to PostNL Manager only) -->
+    <!-- Settings shortcut (PostNL Manager only) -->
     <record id="action_postnl_settings" model="ir.actions.act_window">
       <field name="name">Settings</field>
       <field name="res_model">res.config.settings</field>
       <field name="view_mode">form</field>
-      <field name="target">current</field>
     </record>
-    <!-- FIX: use the actual group id we created in security.xml -->
     <menuitem id="menu_postnl_settings" name="Settings"
               parent="menu_postnl_cfg" action="action_postnl_settings"
               sequence="90" groups="group_postnl_manager"/>
