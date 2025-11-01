@@ -13,7 +13,6 @@
         </list>
       </field>
     </record>
-
     <record id="view_postnl_rule_form" model="ir.ui.view">
       <field name="name">postnl.shipping.rule.form</field>
       <field name="model">postnl.shipping.rule</field>
@@ -36,7 +35,6 @@
         </form>
       </field>
     </record>
-
     <record id="view_postnl_rule_search" model="ir.ui.view">
       <field name="name">postnl.shipping.rule.search</field>
       <field name="model">postnl.shipping.rule</field>

@@ -14,19 +14,15 @@
         "stock",
         "contacts",
     ],
+    "images": ["static/description/icon.png"],
     "data": [
-        # Security
         "security/security.xml",
         "security/ir.model.access.csv",
-        "data/ir_sequence_data.xml",
-        # Menus and views
         "views/postnl_menus.xml",
         "views/postnl_order_views.xml",
         "views/postnl_shipping_rule_views.xml",
         "views/res_config_settings_views.xml",
         "views/sale_postnl_views.xml",
-
-        # Data
         "data/ir_sequence_data.xml",
         "data/ir_cron_data.xml",
     ],

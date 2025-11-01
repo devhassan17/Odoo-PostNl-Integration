@@ -27,7 +27,6 @@ class ResConfigSettings(models.TransientModel):
             "postnl_enable_export_cron","postnl_enable_import_cron","postnl_enable_scan_cron",
         ]:
             ICP.set_param(f"postnl.{f[7:]}", getattr(self, f) or "")
-        # Toggle crons (ignore if not yet created)
         for xmlid, flag in [
             ("odoo_postnl_integration.ir_cron_postnl_export", bool(self.postnl_enable_export_cron)),
             ("odoo_postnl_integration.ir_cron_postnl_import", bool(self.postnl_enable_import_cron)),

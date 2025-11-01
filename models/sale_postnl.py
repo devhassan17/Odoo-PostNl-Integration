@@ -25,7 +25,7 @@ class SaleOrder(models.Model):
             return "03533"
         if NL:
             if self.postnl_evening():
-                return "3087"  # example: evening
+                return "3087"
             return "3085"
         if country and country.code == "BE":
             return "04946"

@@ -3,12 +3,8 @@
     <record id="view_postnl_res_config_settings" model="ir.ui.view">
       <field name="name">res.config.settings.view.form.postnl</field>
       <field name="model">res.config.settings</field>
-
-      <!-- Use the base settings form in Odoo 18 -->
       <field name="inherit_id" ref="base.res_config_settings_view_form"/>
-
       <field name="arch" type="xml">
-        <!-- Safe anchor: inject directly under <form> with modern app/block/setting -->
         <xpath expr="//form" position="inside">
           <app string="Odoo-PostNL-Integration" name="odoo_postnl_integration" data-key="odoo_postnl_integration">
             <block title="PostNL Connection">
@@ -32,9 +28,8 @@
                 </div>
               </setting>
             </block>
-
             <block title="Behavior">
-              <setting string="Batch / Defaults">
+              <setting string="Defaults &amp; Templates">
                 <div class="row">
                   <div class="col-6"><field name="postnl_batch_size"/></div>
                   <div class="col-6"><field name="postnl_default_shipping_code"/></div>
@@ -53,21 +48,14 @@
         </xpath>
       </field>
     </record>
-
-    <!-- Simple action + menu to open our settings page -->
     <record id="action_postnl_settings" model="ir.actions.act_window">
       <field name="name">Settings</field>
       <field name="res_model">res.config.settings</field>
       <field name="view_mode">form</field>
       <field name="target">current</field>
-      <field name="context">{'module': 'odoo_postnl_integration'}</field>
     </record>
-
-    <menuitem id="menu_postnl_settings"
-              name="Settings"
-              parent="menu_postnl_cfg"
-              action="action_postnl_settings"
-              sequence="90"
-              groups="group_postnl_manager"/>
+    <menuitem id="menu_postnl_settings" name="Settings"
+              parent="menu_postnl_cfg" action="action_postnl_settings"
+              sequence="90" groups="group_postnl_manager"/>
   </data>
 </odoo>

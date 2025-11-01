@@ -17,7 +17,6 @@
         </list>
       </field>
     </record>
-
     <record id="view_postnl_order_form" model="ir.ui.view">
       <field name="name">postnl.order.form</field>
       <field name="model">postnl.order</field>
@@ -57,7 +56,6 @@
         </form>
       </field>
     </record>
-
     <record id="view_postnl_order_search" model="ir.ui.view">
       <field name="name">postnl.order.search</field>
       <field name="model">postnl.order</field>

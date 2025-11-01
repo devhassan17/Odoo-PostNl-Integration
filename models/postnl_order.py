@@ -56,19 +56,18 @@ class PostnlOrder(models.Model):
         seq = self.env["ir.sequence"].next_by_code("postnl.order")
         return seq or _("PostNL Order")
 
-    # -------- logging helper ----------
     def _log(self, level, msg, **kw):
         payload = {"order": self.name or self.id, **kw}
-        if level == "debug": _logger.debug(msg, payload)
-        elif level == "warning": _logger.warning(msg, payload)
-        elif level == "error": _logger.error(msg, payload)
-        else: _logger.info(msg, payload)
+        if level == "debug": _logger.debug("%s | %s", msg, payload)
+        elif level == "warning": _logger.warning("%s | %s", msg, payload)
+        elif level == "error": _logger.error("%s | %s", msg, payload)
+        else: _logger.info("%s | %s", msg, payload)
 
     def _post_single_error(self, text):
-        """Post only once per error hash to chatter (but ALWAYS log)."""
         self.ensure_one()
         text = text or _("Unknown error")
-        self._log("error", "PostNL error: %s", error=text)
+        self._log("error", "PostNL error", error=text)
+        import hashlib
         h = hashlib.sha1(text.encode("utf-8")).hexdigest()
         if h != (self.last_error_hash or ""):
             self.message_post(body=_("PostNL error: %s") % text)
@@ -81,16 +80,12 @@ class PostnlOrder(models.Model):
     def _apply_shipping_rule(self):
         self.ensure_one()
         self._log("debug", "Apply shipping rule start", weight=self.weight_total, country=self.country_id.code if self.country_id else None)
-
-        # Priority: explicit rules → delivery options mapping → default
         Rule = self.env["postnl.shipping.rule"]
         rule = Rule._match(country=self.country_id, weight=self.weight_total)
         if rule:
             self.write({"shipping_rule_id": rule.id, "shipping_code": rule.shipping_code})
             self._log("info", "Matched shipping rule", rule=rule.name, code=rule.shipping_code)
             return
-
-        # Delivery options influence (from sale.order fields)
         code = self.sale_id._postnl_pick_shipping_code_fallback(self.country_id)
         self.write({"shipping_rule_id": False, "shipping_code": code})
         self._log("info", "Applied delivery-options fallback code", code=code)
@@ -113,7 +108,6 @@ class PostnlOrder(models.Model):
     def action_mark_shipped(self):
         self._log("info", "Marked as shipped")
         self.write({"state": "shipped", "last_sync_at": fields.Datetime.now()})
-        # Optional: auto-complete order if paid, etc. (left conservative)
         return True
 
     def action_open_tnt(self):
@@ -123,14 +117,13 @@ class PostnlOrder(models.Model):
         self._log("info", "Open Track & Trace", url=self.tnt_url)
         return {"type": "ir.actions.act_url", "url": self.tnt_url, "target": "new"}
 
-    # ---------- CRONS ----------
     @api.model
     def _cron_scan_sale_orders(self):
         Sale = self.env["sale.order"]
         sales = Sale.search([("state", "in", ["sale", "done"])], limit=200)
         created = 0
         for so in sales:
-            if self.search_count([("sale_id", "=", so.id)]):
+            if self.search_count([("sale_id","=",so.id)]):
                 continue
             rec = self.create({"name": so.name, "sale_id": so.id})
             rec._apply_shipping_rule()
@@ -141,7 +134,7 @@ class PostnlOrder(models.Model):
 
     @api.model
     def _cron_export_orders(self):
-        orders = self.search([("state", "=", "queued")], order="id asc", limit=50)
+        orders = self.search([("state","=","queued")], order="id asc", limit=50)
         _logger.info("PostNL EXPORT: %s orders queued", len(orders))
         if not orders:
             return 0

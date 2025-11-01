@@ -7,7 +7,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 try:
-    import paramiko  # Optional; on Odoo.sh/Odoo Cloud may not be available
+    import paramiko
 except Exception:
     paramiko = None
 
@@ -16,7 +16,6 @@ class PostnlService(models.AbstractModel):
     _description = "PostNL Service Layer (exports/imports)"
     _inherit = ["mail.thread"]
 
-    # ---------- ORDER EXPORT ----------
     def _export_orders_to_postnl(self, orders):
         self = self.sudo()
         count = 0
@@ -36,10 +35,8 @@ class PostnlService(models.AbstractModel):
         _logger.info("PostNL EXPORT summary: %s exported", count)
         return count
 
-    # ---------- SHIPMENT IMPORT ----------
     def _import_shipments_update_orders(self):
         done = 0
-        # TODO: real SFTP listing + parse. For testing, mark exported orders as shipped with fake 3S.
         staged = self.env["postnl.order"].search([("state","=","exported")], limit=50)
         for rec in staged:
             try:
@@ -54,7 +51,6 @@ class PostnlService(models.AbstractModel):
         _logger.info("PostNL IMPORT shipments summary: %s marked shipped", done)
         return done
 
-    # ---------- PRODUCT EXPORT (Woo plugin parity) ----------
     @api.model
     def _cron_export_products(self, limit=200):
         prods = self.env["product.template"].search([("sale_ok","=",True)], limit=limit)
@@ -64,7 +60,6 @@ class PostnlService(models.AbstractModel):
         xml = self._build_products_xml(prods)
         try:
             self._send_file("products", "products_export.xml", xml.encode("utf-8"))
-            # Attach to first product for audit
             self._attach_generic(xml, name="products_export.xml", model="product.template", res_id=prods[0].id)
             _logger.info("PostNL PRODUCT EXPORT: %s products exported", len(prods))
             return len(prods)
@@ -72,17 +67,14 @@ class PostnlService(models.AbstractModel):
             _logger.exception("PostNL PRODUCT EXPORT failed")
             return 0
 
-    # ---------- INVENTORY IMPORT (Woo plugin parity) ----------
     @api.model
     def _cron_import_inventory(self):
-        # TODO: Pull stock file. For testing, just write a timestamp on products.
         now = fields.Datetime.now()
         pts = self.env["product.template"].search([("sale_ok","=",True)], limit=200)
-        pts.write({"website_published": True})  # harmless op to ensure write works
+        pts.write({"website_published": True})
         _logger.info("PostNL INVENTORY IMPORT (demo): touched %s products at %s", len(pts), now)
         return len(pts)
 
-    # ---------- helpers ----------
     def _attach_payload(self, order, data_str, fname="payload.xml"):
         if isinstance(data_str, str):
             data = data_str.encode("utf-8")
@@ -114,7 +106,6 @@ class PostnlService(models.AbstractModel):
     def _build_order_xml(self, order):
         partner = order.sale_id.partner_shipping_id
         lines = order.sale_id.order_line.filtered(lambda l: not l.display_type)
-        # include gift message and age-check per Woo parity
         ln_xml = "".join([
             f"""
             <line>
@@ -164,19 +155,18 @@ class PostnlService(models.AbstractModel):
               <sku>{sku}</sku>
               <ean>{ean}</ean>
               <name>{(p.name or '').replace('&','&amp;')}</name>
-              <weight>{(p.weight or 0.0):.3f}</weight>
-              <height>{(p.height or 0.0):.3f}</height>
-              <width>{(p.width or 0.0):.3f}</width>
-              <length>{(p.length or 0.0):.3f}</length>
+              <weight>{(getattr(p, 'weight', 0.0) or 0.0):.3f}</weight>
+              <height>{(getattr(p, 'height', 0.0) or 0.0):.3f}</height>
+              <width>{(getattr(p, 'width', 0.0) or 0.0):.3f}</width>
+              <length>{(getattr(p, 'length', 0.0) or 0.0):.3f}</length>
             </item>
-            """)
+            """))
         xml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <items>
   {''.join(items)}
 </items>"""
         return xml
 
-    # --- SFTP send (optional, logs everything; simulates if paramiko missing) ---
     def _send_file(self, channel, filename, bytes_data):
         ICP = self.env["ir.config_parameter"].sudo()
         host = ICP.get_param("postnl.sftp_host")
