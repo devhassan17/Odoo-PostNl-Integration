@@ -1,34 +1,27 @@
+# -*- coding: utf-8 -*-
 {
-    "name": "Odoo-PostNl-Integration",
-    "summary": "Connect Odoo 18 to PostNL: label creation, delivery options, pickup points, tracking, WBS rules.",
+    "name": "PostNL Connector (WooCommerce Bridge)",
+    "summary": "One app to stage orders for PostNL and configure shipping-code rules (Odoo 18).",
     "version": "18.0.1.0.0",
-    "author": "You + ChatGPT",
+    "category": "Operations/Warehouse",
+    "author": "Your Company",
     "website": "https://example.com",
-    "category": "Inventory/Delivery",
     "license": "LGPL-3",
-    "depends": ["base", "stock", "delivery", "sale_management", "website_sale"],
+    "depends": ["base", "mail", "sale_management", "stock", "contacts"],
     "data": [
+        # Security
+        "security/security.xml",
         "security/ir.model.access.csv",
-        "data/ir_cron.xml",
-
-        # Root app menu FIRST so other menus can reference it
+        # Menus first (root before children)
         "views/postnl_menus.xml",
-
-        # Views and actions (they will place their menu items under the PostNL app)
-        "views/postnl_settings_views.xml",
-        "views/postnl_wbs_views.xml",
-        "views/postnl_shipment_views.xml",
-        "views/delivery_carrier_views.xml",
-        "views/sale_order_views.xml",
-        "wizard/generate_label_wizard_views.xml",
-        "views/website_checkout_templates.xml"
+        # Views
+        "views/postnl_order_views.xml",
+        "views/postnl_shipping_rule_views.xml",
+        "views/res_config_settings_views.xml",
+        # Crons
+        "data/ir_cron_data.xml",
     ],
-    "assets": {
-        "web.assets_frontend": [
-            "postnl_base/static/src/js/postnl_checkout.js",
-            "postnl_base/static/src/xml/postnl_templates.xml"
-        ]
-    },
+    "assets": {},
+    "application": True,
     "installable": True,
-    "application": True  # <-- this makes it a top-level App with its own icon
 }

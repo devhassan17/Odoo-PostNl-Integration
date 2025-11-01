@@ -1,5 +1,0 @@
-<odoo>
-    <!-- No inheritance of website_sale templates (IDs changed in Odoo 18).
-         JS injects the PostNL block on checkout pages. -->
-    <template id="postnl_checkout_placeholder" name="PostNL Checkout Placeholder"/>
-</odoo>

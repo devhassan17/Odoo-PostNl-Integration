@@ -1,0 +1,56 @@
+<odoo>
+  <data>
+    <record id="view_postnl_res_config_settings" model="ir.ui.view">
+      <field name="name">res.config.settings.view.form.postnl</field>
+      <field name="model">res.config.settings</field>
+      <field name="inherit_id" ref="base.view_res_config_settings"/>
+      <field name="arch" type="xml">
+        <xpath expr="//div[hasclass('settings')]" position="inside">
+          <div class="app_settings_block" string="PostNL" data-key="postnl_integration">
+            <h2>PostNL</h2>
+            <div class="row mt16 o_settings_container">
+              <div class="col-12 col-md-6">
+                <div class="o_form_label">SFTP</div>
+                <group>
+                  <field name="postnl_sftp_host" placeholder="sftp.example.com"/>
+                  <field name="postnl_sftp_port"/>
+                  <field name="postnl_sftp_user"/>
+                  <field name="postnl_sftp_password" password="True"/>
+                </group>
+                <div class="o_form_label">Remote Paths</div>
+                <group>
+                  <field name="postnl_remote_order_path"/>
+                  <field name="postnl_remote_shipment_path"/>
+                  <field name="postnl_remote_stock_path"/>
+                </group>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="o_form_label">Behavior</div>
+                <group>
+                  <field name="postnl_batch_size"/>
+                  <field name="postnl_default_shipping_code"/>
+                  <field name="postnl_tnt_url_template" placeholder="https://tracking.postnl.nl/#!/track/{}"/>
+                </group>
+                <div class="o_form_label">Schedulers</div>
+                <group>
+                  <field name="postnl_enable_scan_cron"/>
+                  <field name="postnl_enable_export_cron"/>
+                  <field name="postnl_enable_import_cron"/>
+                </group>
+              </div>
+            </div>
+          </div>
+        </xpath>
+      </field>
+    </record>
+
+    <record id="action_postnl_settings" model="ir.actions.act_window">
+      <field name="name">Settings</field>
+      <field name="res_model">res.config.settings</field>
+      <field name="view_mode">list,form</field>
+      <field name="target">current</field>
+      <field name="context">{'module' : 'postnl_integration'}</field>
+    </record>
+    <menuitem id="menu_postnl_settings" name="Settings" parent="menu_postnl_cfg" action="action_postnl_settings" sequence="90" groups="postnl_integration.group_postnl_manager"/>
+  </data>
+</odoo>

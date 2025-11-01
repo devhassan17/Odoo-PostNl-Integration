@@ -1,5 +1,5 @@
-from . import postnl_settings
-from . import postnl_wbs_rule
-from . import postnl_shipment
-from . import delivery_carrier_postnl
-from . import sale_order
+# -*- coding: utf-8 -*-
+from . import postnl_order
+from . import postnl_shipping_rule
+from . import res_config_settings
+from . import postnl_service

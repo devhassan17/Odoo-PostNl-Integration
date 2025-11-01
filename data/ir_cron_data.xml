@@ -1,0 +1,33 @@
+<odoo>
+  <data noupdate="0">
+    <record id="ir_cron_postnl_scan" model="ir.cron">
+      <field name="name">PostNL: Scan Sales Orders</field>
+      <field name="model_id" ref="model_postnl_order"/>
+      <field name="state">code</field>
+      <field name="code">model._cron_scan_sale_orders()</field>
+      <field name="interval_number">1</field>
+      <field name="interval_type">hours</field>
+      <field name="active">True</field>
+    </record>
+
+    <record id="ir_cron_postnl_export" model="ir.cron">
+      <field name="name">PostNL: Export Orders</field>
+      <field name="model_id" ref="model_postnl_order"/>
+      <field name="state">code</field>
+      <field name="code">model._cron_export_orders()</field>
+      <field name="interval_number">30</field>
+      <field name="interval_type">minutes</field>
+      <field name="active">True</field>
+    </record>
+
+    <record id="ir_cron_postnl_import" model="ir.cron">
+      <field name="name">PostNL: Import Shipments</field>
+      <field name="model_id" ref="model_postnl_order"/>
+      <field name="state">code</field>
+      <field name="code">model._cron_import_shipments()</field>
+      <field name="interval_number">30</field>
+      <field name="interval_type">minutes</field>
+      <field name="active">True</field>
+    </record>
+  </data>
+</odoo>

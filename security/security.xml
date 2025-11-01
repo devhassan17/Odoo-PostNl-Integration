@@ -1,0 +1,13 @@
+<odoo>
+  <data noupdate="0">
+    <record id="group_postnl_user" model="res.groups">
+      <field name="name">PostNL User</field>
+      <field name="category_id" ref="base.module_category_inventory"/>
+    </record>
+    <record id="group_postnl_manager" model="res.groups">
+      <field name="name">PostNL Manager</field>
+      <field name="category_id" ref="base.module_category_inventory"/>
+      <field name="implied_ids" eval="[(4, ref('postnl_integration.group_postnl_user'))]"/>
+    </record>
+  </data>
+</odoo>
