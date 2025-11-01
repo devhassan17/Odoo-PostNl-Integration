@@ -5,7 +5,6 @@ _logger = logging.getLogger(__name__)
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    # Delivery options like the Woo official plugin
     postnl_delivery_date = fields.Date(string="PostNL Delivery Date")
     postnl_timeslot = fields.Selection([
         ("morning","Morning"),
@@ -17,11 +16,11 @@ class SaleOrder(models.Model):
     postnl_mailbox_parcel = fields.Boolean(string="Mailbox Parcel")
     postnl_age_check = fields.Boolean(string="Age Check (18+)")
 
+    def postnl_evening(self):
+        return self.postnl_timeslot == "evening"
+
     def _postnl_pick_shipping_code_fallback(self, country):
-        """Simple mapping similar to Woo delivery options → PostNL codes."""
         NL = country and country.code == "NL"
-        # Minimal demo codes (you can adjust to your contract):
-        # mailbox = 03533, domestic default = 3085, EU = 04952, BE = 04946, ROW = 04945
         if self.postnl_mailbox_parcel and NL:
             return "03533"
         if NL:
@@ -34,10 +33,6 @@ class SaleOrder(models.Model):
             return "04952"
         return "04945"
 
-    def postnl_evening(self):
-        return self.postnl_timeslot == "evening"
-
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
-
     postnl_gift_message = fields.Char(string="Gift Message (per line)", size=140)

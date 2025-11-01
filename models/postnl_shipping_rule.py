@@ -1,4 +1,6 @@
 from odoo import api, fields, models, _
+import logging
+_logger = logging.getLogger(__name__)
 
 class PostnlShippingRule(models.Model):
     _name = "postnl.shipping.rule"
@@ -15,10 +17,14 @@ class PostnlShippingRule(models.Model):
     @api.model
     def _match(self, country, weight):
         if not country or weight is None:
+            _logger.info("POSTNL RULE: no match (country=%s, weight=%s)", country and country.code, weight)
             return False
         rules = self.search([
             ("active","=",True),
             ("country_ids","in",[country.id]),
             ("max_weight",">=",weight),
         ], order="sequence asc, max_weight asc", limit=1)
-        return rules[:1] or False
+        rule = rules[:1] or False
+        _logger.info("POSTNL RULE: country=%s weight=%.3f -> %s",
+                     country.code, weight, rule and f"{rule.name}({rule.shipping_code})")
+        return rule
