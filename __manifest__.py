@@ -18,7 +18,7 @@
         # Security
         "security/security.xml",
         "security/ir.model.access.csv",
-
+        "data/ir_sequence_data.xml",
         # Menus and views
         "views/postnl_menus.xml",
         "views/postnl_order_views.xml",
