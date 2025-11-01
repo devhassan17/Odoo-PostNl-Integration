@@ -3,8 +3,12 @@
     <record id="view_postnl_res_config_settings" model="ir.ui.view">
       <field name="name">res.config.settings.view.form.postnl</field>
       <field name="model">res.config.settings</field>
-      <field name="inherit_id" ref="base.view_res_config_settings"/>
+
+      <!-- Odoo 18: inherit from base_setup -->
+      <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+
       <field name="arch" type="xml">
+        <!-- Insert our block into the main settings container -->
         <xpath expr="//div[hasclass('settings')]" position="inside">
           <div class="app_settings_block" string="PostNL" data-key="odoo_postnl_integration">
             <h2>Odoo-PostNL-Integration</h2>
@@ -24,6 +28,7 @@
                   <field name="postnl_remote_stock_path"/>
                 </group>
               </div>
+
               <div class="col-12 col-md-6">
                 <div class="o_form_label">Behavior</div>
                 <group>
@@ -44,13 +49,19 @@
       </field>
     </record>
 
+    <!-- Settings action (no module-context dependency on folder name) -->
     <record id="action_postnl_settings" model="ir.actions.act_window">
       <field name="name">Settings</field>
       <field name="res_model">res.config.settings</field>
-      <field name="view_mode">list,form</field>
+      <field name="view_mode">form</field>
       <field name="target">current</field>
-      <field name="context">{'module' : 'odoo_postnl_integration'}</field>
     </record>
-    <menuitem id="menu_postnl_settings" name="Settings" parent="menu_postnl_cfg" action="action_postnl_settings" sequence="90" groups="odoo_postnl_integration.group_postnl_manager"/>
+
+    <menuitem id="menu_postnl_settings"
+              name="Settings"
+              parent="menu_postnl_cfg"
+              action="action_postnl_settings"
+              sequence="90"
+              groups="group_postnl_manager"/>
   </data>
 </odoo>

@@ -18,5 +18,8 @@
       <field name="view_mode">list,form</field>
     </record>
     <menuitem id="menu_postnl_rules" name="Shipping Rules" parent="menu_postnl_cfg" action="action_postnl_rules" sequence="10"/>
+
+    <!-- If you keep a separate Settings menu here, ensure local group id -->
+    <!-- (You can omit this block if you already replaced it in settings view file) -->
   </data>
 </odoo>

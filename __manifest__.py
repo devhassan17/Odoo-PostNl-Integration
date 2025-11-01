@@ -2,12 +2,19 @@
 {
     "name": "Odoo-PostNL-Integration",
     "summary": "Single Odoo app for PostNL: stage orders, export, import shipments, and map shipping codes.",
-    "version": "18.0.1.1.0",
+    "version": "18.0.1.1.1",
     "category": "Operations/Warehouse",
     "author": "Your Company",
     "website": "https://example.com",
     "license": "LGPL-3",
-    "depends": ["base", "mail", "sale_management", "stock", "contacts"],
+    "depends": [
+        "base",
+        "base_setup",          # <-- important for Settings inherit
+        "mail",
+        "sale_management",
+        "stock",
+        "contacts",
+    ],
     "data": [
         "security/security.xml",
         "security/ir.model.access.csv",
