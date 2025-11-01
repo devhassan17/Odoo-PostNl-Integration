@@ -1,55 +1,62 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
   <data>
     <record id="view_postnl_res_config_settings" model="ir.ui.view">
       <field name="name">res.config.settings.view.form.postnl</field>
       <field name="model">res.config.settings</field>
-      <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
-      <field name="arch" type="xml">
-        <!-- Corrected XPath targeting the settings container -->
-        <xpath expr="//div[hasclass('settings')]//sheet" position="inside">
-          <div class="app_settings_block" string="PostNL" data-key="odoo_postnl_integration">
-            <h2>PostNL Integration</h2>
-            <div class="row mt16 o_settings_container">
-              <div class="col-12 col-md-6">
-                <div class="o_form_label">SFTP</div>
-                <group>
-                  <field name="postnl_sftp_host" placeholder="sftp.example.com"/>
-                  <field name="postnl_sftp_port"/>
-                  <field name="postnl_sftp_user"/>
-                  <field name="postnl_sftp_password" password="True"/>
-                </group>
-                <div class="o_form_label">Remote Paths</div>
-                <group>
-                  <field name="postnl_remote_order_path"/>
-                  <field name="postnl_remote_shipment_path"/>
-                  <field name="postnl_remote_stock_path"/>
-                </group>
-              </div>
 
-              <div class="col-12 col-md-6">
-                <div class="o_form_label">Behavior</div>
-                <group>
-                  <field name="postnl_batch_size"/>
-                  <field name="postnl_default_shipping_code"/>
-                  <field name="postnl_tnt_url_template" placeholder="https://tracking.postnl.nl/#!/track/{}"/>
-                </group>
-                <div class="o_form_label">Schedulers</div>
-                <group>
-                  <field name="postnl_enable_scan_cron"/>
-                  <field name="postnl_enable_export_cron"/>
-                  <field name="postnl_enable_import_cron"/>
-                </group>
-              </div>
-            </div>
-          </div>
+      <!-- Use the base settings form in Odoo 18 -->
+      <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+
+      <field name="arch" type="xml">
+        <!-- Safe anchor: inject directly under <form> with modern app/block/setting -->
+        <xpath expr="//form" position="inside">
+          <app string="Odoo-PostNL-Integration" name="odoo_postnl_integration" data-key="odoo_postnl_integration">
+            <block title="PostNL Connection">
+              <setting string="SFTP Host / Port">
+                <div class="row">
+                  <div class="col-8"><field name="postnl_sftp_host" placeholder="sftp.example.com"/></div>
+                  <div class="col-4"><field name="postnl_sftp_port"/></div>
+                </div>
+              </setting>
+              <setting string="SFTP Credentials">
+                <div class="row">
+                  <div class="col-6"><field name="postnl_sftp_user"/></div>
+                  <div class="col-6"><field name="postnl_sftp_password" password="True"/></div>
+                </div>
+              </setting>
+              <setting string="Remote Paths">
+                <div class="row">
+                  <div class="col-12"><field name="postnl_remote_order_path"/></div>
+                  <div class="col-12"><field name="postnl_remote_shipment_path"/></div>
+                  <div class="col-12"><field name="postnl_remote_stock_path"/></div>
+                </div>
+              </setting>
+            </block>
+
+            <block title="Behavior">
+              <setting string="Batch / Defaults">
+                <div class="row">
+                  <div class="col-6"><field name="postnl_batch_size"/></div>
+                  <div class="col-6"><field name="postnl_default_shipping_code"/></div>
+                  <div class="col-12"><field name="postnl_tnt_url_template" placeholder="https://tracking.postnl.nl/#!/track/{}"/></div>
+                </div>
+              </setting>
+              <setting string="Schedulers">
+                <div class="row">
+                  <div class="col-4"><field name="postnl_enable_scan_cron"/></div>
+                  <div class="col-4"><field name="postnl_enable_export_cron"/></div>
+                  <div class="col-4"><field name="postnl_enable_import_cron"/></div>
+                </div>
+              </setting>
+            </block>
+          </app>
         </xpath>
       </field>
     </record>
 
-    <!-- Action + Menu -->
+    <!-- Simple action + menu to open our settings page -->
     <record id="action_postnl_settings" model="ir.actions.act_window">
-      <field name="name">PostNL Settings</field>
+      <field name="name">Settings</field>
       <field name="res_model">res.config.settings</field>
       <field name="view_mode">form</field>
       <field name="target">current</field>
