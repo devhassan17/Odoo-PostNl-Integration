@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "Monta — PostNL Integration",
+    "name": "monta — postnl integration",
     "summary": "PostNL for Odoo via Monta: stage orders, export orders/products, import shipments/stock, delivery options, age check, gift messages, rule-based shipping codes.",
     "version": "18.0.3.0.0",
     "category": "Operations/Warehouse",
