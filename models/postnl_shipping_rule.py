@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 
 class PostnlShippingRule(models.Model):
@@ -15,11 +14,11 @@ class PostnlShippingRule(models.Model):
 
     @api.model
     def _match(self, country, weight):
-        if not country or not weight:
+        if not country or weight is None:
             return False
         rules = self.search([
-            ("active", "=", True),
-            ("country_ids", "in", [country.id]),
-            ("max_weight", ">=", weight),
+            ("active","=",True),
+            ("country_ids","in",[country.id]),
+            ("max_weight",">=",weight),
         ], order="sequence asc, max_weight asc", limit=1)
         return rules[:1] or False

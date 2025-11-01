@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from odoo import api, fields, models
 
 class ResConfigSettings(models.TransientModel):
@@ -28,19 +27,16 @@ class ResConfigSettings(models.TransientModel):
             "postnl_enable_export_cron","postnl_enable_import_cron","postnl_enable_scan_cron",
         ]:
             ICP.set_param(f"postnl.{f[7:]}", getattr(self, f) or "")
-        # Toggle crons
-        try:
-            self.env.ref("postnl_integration.ir_cron_postnl_export").sudo().write({"active": bool(self.postnl_enable_export_cron)})
-        except Exception:
-            pass
-        try:
-            self.env.ref("postnl_integration.ir_cron_postnl_import").sudo().write({"active": bool(self.postnl_enable_import_cron)})
-        except Exception:
-            pass
-        try:
-            self.env.ref("postnl_integration.ir_cron_postnl_scan").sudo().write({"active": bool(self.postnl_enable_scan_cron)})
-        except Exception:
-            pass
+        # Toggle crons (ignore if not yet created)
+        for xmlid, flag in [
+            ("odoo_postnl_integration.ir_cron_postnl_export", bool(self.postnl_enable_export_cron)),
+            ("odoo_postnl_integration.ir_cron_postnl_import", bool(self.postnl_enable_import_cron)),
+            ("odoo_postnl_integration.ir_cron_postnl_scan", bool(self.postnl_enable_scan_cron)),
+        ]:
+            try:
+                self.env.ref(xmlid).sudo().write({"active": flag})
+            except Exception:
+                pass
         return res
 
     @api.model

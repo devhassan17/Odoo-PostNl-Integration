@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 import hashlib
@@ -31,7 +30,6 @@ class PostnlOrder(models.Model):
     last_error_text = fields.Text(string="Last Error")
     last_error_hash = fields.Char(string="Last Error Hash", copy=False)
 
-    # Derived from sale order (addresses & weights)
     @api.depends("sale_id.partner_shipping_id", "sale_id.order_line.product_id", "sale_id.order_line.product_uom_qty")
     def _compute_country_weight(self):
         for rec in self:
@@ -39,8 +37,7 @@ class PostnlOrder(models.Model):
             weight = 0.0
             if rec.sale_id:
                 for line in rec.sale_id.order_line.filtered(lambda l: not l.display_type and l.product_id):
-                    w = (line.product_id.weight or 0.0) * (line.product_uom_qty or 0.0)
-                    weight += w
+                    weight += (line.product_id.weight or 0.0) * (line.product_uom_qty or 0.0)
             rec.country_id = country.id if country else False
             rec.weight_total = weight
 
@@ -53,24 +50,22 @@ class PostnlOrder(models.Model):
 
     @api.model
     def _default_name(self):
-        return self.env["ir.sequence"].next_by_code("postnl.order") or _("PostNL Order")
+        seq = self.env["ir.sequence"].next_by_code("postnl.order")
+        return seq or _("PostNL Order")
 
     def _post_single_error(self, text):
-        """Post a single chatter message per unique error text (hash) per record."""
         self.ensure_one()
         text = text or _("Unknown error")
         h = hashlib.sha1(text.encode("utf-8")).hexdigest()
         if h != (self.last_error_hash or ""):
             self.message_post(body=_("PostNL error: %s") % text)
             self.write({"last_error_hash": h, "last_error_text": text, "state": "error"})
-        # no re-posting if same error hash
 
     def action_apply_rule(self):
         for rec in self:
             rec._apply_shipping_rule()
 
     def _apply_shipping_rule(self):
-        """Pick best matching shipping rule; else default from config parameter."""
         self.ensure_one()
         Rule = self.env["postnl.shipping.rule"]
         rule = Rule._match(country=self.country_id, weight=self.weight_total)
@@ -101,28 +96,17 @@ class PostnlOrder(models.Model):
         self.ensure_one()
         if not self.tnt_url:
             raise UserError(_("No tracking URL."))
-        return {
-            "type": "ir.actions.act_url",
-            "url": self.tnt_url,
-            "target": "new",
-        }
+        return {"type": "ir.actions.act_url", "url": self.tnt_url, "target": "new"}
 
-    # ---------- CRONS ----------
     @api.model
     def _cron_scan_sale_orders(self):
-        """Create staged PostNL orders for confirmed Sales Orders that are not yet staged."""
         Sale = self.env["sale.order"]
-        domain = [("state", "in", ["sale", "done"]), ("picking_policy", "!=", False)]
-        sales = Sale.search(domain, limit=200)
+        sales = Sale.search([("state", "in", ["sale", "done"])], limit=200)
         created = 0
         for so in sales:
-            exists = self.search_count([("sale_id", "=", so.id)])
-            if exists:
+            if self.search_count([("sale_id","=",so.id)]):
                 continue
-            rec = self.create({
-                "name": so.name,
-                "sale_id": so.id,
-            })
+            rec = self.create({"name": so.name, "sale_id": so.id})
             rec._apply_shipping_rule()
             created += 1
         return created
@@ -130,7 +114,7 @@ class PostnlOrder(models.Model):
     @api.model
     def _cron_export_orders(self):
         service = self.env["postnl.service"]
-        orders = self.search([("state", "=", "queued")], order="id asc", limit=50)
+        orders = self.search([("state","=","queued")], order="id asc", limit=50)
         if not orders:
             return 0
         return service._export_orders_to_postnl(orders)

@@ -1,14 +1,10 @@
 <odoo>
   <data>
-    <!-- Root app menu first -->
-    <menuitem id="menu_postnl_root" name="PostNL" sequence="15"
-              web_icon="postnl_integration,static/description/icon.png"/>
-
-    <!-- Sections -->
+    <menuitem id="menu_postnl_root" name="Odoo-PostNL-Integration" sequence="15"
+              web_icon="odoo_postnl_integration,static/description/icon.png"/>
     <menuitem id="menu_postnl_ops" name="Operations" parent="menu_postnl_root" sequence="10"/>
     <menuitem id="menu_postnl_cfg" name="Configuration" parent="menu_postnl_root" sequence="90"/>
 
-    <!-- Actions -->
     <record id="action_postnl_orders" model="ir.actions.act_window">
       <field name="name">Orders</field>
       <field name="res_model">postnl.order</field>

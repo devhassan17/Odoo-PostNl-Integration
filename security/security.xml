@@ -7,7 +7,7 @@
     <record id="group_postnl_manager" model="res.groups">
       <field name="name">PostNL Manager</field>
       <field name="category_id" ref="base.module_category_inventory"/>
-      <field name="implied_ids" eval="[(4, ref('postnl_integration.group_postnl_user'))]"/>
+      <field name="implied_ids" eval="[(4, ref('group_postnl_user'))]"/>
     </record>
   </data>
 </odoo>

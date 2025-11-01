@@ -1,29 +1,21 @@
-# -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from datetime import datetime
+import base64
 
 class PostnlService(models.AbstractModel):
     _name = "postnl.service"
     _description = "PostNL Service Layer (exports/imports)"
     _inherit = ["mail.thread"]
 
-    # NOTE: To keep the module self-contained and dependency-free, we simulate file transfer.
-    # Replace the TODO sections with actual SFTP logic (e.g., using paramiko) if needed.
-
     def _export_orders_to_postnl(self, orders):
         self = self.sudo()
         count = 0
         for order in orders:
             try:
-                # Ensure shipping code is set
                 if not order.shipping_code:
                     order._apply_shipping_rule()
-
-                # Build a tiny XML payload representing the order (compatible with basic ECS structure)
                 xml = self._build_order_xml(order)
-                # TODO: Send `xml` to PostNL via SFTP using config parameters.
-                # For now, attach the XML to the record for auditing.
                 self._attach_payload(order, xml, fname=f"order_{order.name.replace('/', '_')}.xml")
                 order.action_mark_exported()
                 count += 1
@@ -32,8 +24,6 @@ class PostnlService(models.AbstractModel):
         return count
 
     def _import_shipments_update_orders(self):
-        # TODO: Poll PostNL for shipment files; here we simulate: mark any exported order with
-        # a fake tracking number as shipped.
         staged = self.env["postnl.order"].search([("state","=","exported")], limit=50)
         done = 0
         for rec in staged:
@@ -46,8 +36,6 @@ class PostnlService(models.AbstractModel):
                 rec._post_single_error(str(e))
         return done
 
-    # ---------- helpers ----------
-
     def _attach_payload(self, order, data, fname="payload.xml"):
         if isinstance(data, str):
             data = data.encode("utf-8")
@@ -56,12 +44,11 @@ class PostnlService(models.AbstractModel):
             "res_model": order._name,
             "res_id": order.id,
             "type": "binary",
-            "datas": self.env["ir.attachment"]._file_readable(data),
+            "datas": base64.b64encode(data).decode("ascii"),
             "mimetype": "application/xml",
         })
 
     def _build_order_xml(self, order):
-        # Minimalistic XML; adapt fields as your PostNL ECS flavor requires.
         partner = order.sale_id.partner_shipping_id
         lines = order.sale_id.order_line.filtered(lambda l: not l.display_type)
         ln_xml = "".join([
