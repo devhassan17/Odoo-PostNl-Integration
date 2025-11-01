@@ -1,8 +1,8 @@
 <odoo>
   <data>
-    <!-- Root App menu (launcher tile uses this icon & label) -->
+    <!-- Temporary root (will be re-parented under Monta by post_init_hook) -->
     <menuitem id="menu_postnl_root"
-              name="PostNL Logistics Hub"
+              name="PostNL"
               sequence="15"
               web_icon="monta,static/description/icon.png"/>
 
@@ -28,7 +28,7 @@
     <menuitem id="menu_postnl_rules" name="Shipping Rules"
               parent="menu_postnl_cfg" action="action_postnl_rules" sequence="10"/>
 
-    <!-- Quick testers in Operations -->
+    <!-- Quick testers -->
     <record id="action_postnl_run_export_products" model="ir.actions.server">
       <field name="name">Export Products (Now)</field>
       <field name="model_id" ref="model_postnl_order"/>
@@ -47,7 +47,7 @@
     <menuitem id="menu_postnl_run_import_inventory" name="Import Inventory (Now)"
               parent="menu_postnl_ops" action="action_postnl_run_import_inventory" sequence="50"/>
 
-    <!-- Settings shortcut (PostNL Manager only) -->
+    <!-- Settings (restricted) -->
     <record id="action_postnl_settings" model="ir.actions.act_window">
       <field name="name">Settings</field>
       <field name="res_model">res.config.settings</field>
