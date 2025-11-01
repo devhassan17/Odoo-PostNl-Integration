@@ -2,7 +2,7 @@
 {
     "name": "Odoo-PostNL-Integration",
     "summary": "Single Odoo app for PostNL: stage orders, export (orders/products), import (shipments/stock), delivery options, age-check, gift messages, and rule-based shipping codes.",
-    "version": "18.0.2.0.0",
+    "version": "18.0.2.1.0",
     "category": "Operations/Warehouse",
     "author": "Your Company",
     "website": "https://example.com",
@@ -14,8 +14,11 @@
         "stock",
         "contacts",
     ],
+    # The Apps store card uses this file; the home launcher uses the root menu's web_icon.
+    "icon": "static/description/icon.png",
     "images": ["static/description/icon.png"],
     "data": [
+        # ROOT MENU FIRST so the launcher tile exists
         "security/security.xml",
         "security/ir.model.access.csv",
         "views/postnl_menus.xml",

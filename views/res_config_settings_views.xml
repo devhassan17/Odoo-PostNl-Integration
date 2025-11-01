@@ -14,22 +14,12 @@
                   <div class="col-4"><field name="postnl_sftp_port"/></div>
                 </div>
               </setting>
-
               <setting string="SFTP Credentials">
                 <div class="row">
                   <div class="col-6"><field name="postnl_sftp_user"/></div>
                   <div class="col-6"><field name="postnl_sftp_password" password="True"/></div>
                 </div>
-                <!-- NEW: Test button -->
-                <footer>
-                  <button name="action_test_postnl_sftp"
-                          type="object"
-                          string="Test SFTP"
-                          class="oe_highlight"
-                          icon="fa-plug"/>
-                </footer>
               </setting>
-
               <setting string="Remote Paths">
                 <div class="row">
                   <div class="col-12"><field name="postnl_remote_order_path"/></div>
@@ -38,7 +28,6 @@
                 </div>
               </setting>
             </block>
-
             <block title="Behavior">
               <setting string="Defaults &amp; Templates">
                 <div class="row">
@@ -59,14 +48,12 @@
         </xpath>
       </field>
     </record>
-
     <record id="action_postnl_settings" model="ir.actions.act_window">
       <field name="name">Settings</field>
       <field name="res_model">res.config.settings</field>
       <field name="view_mode">form</field>
       <field name="target">current</field>
     </record>
-
     <menuitem id="menu_postnl_settings" name="Settings"
               parent="menu_postnl_cfg" action="action_postnl_settings"
               sequence="90" groups="group_postnl_manager"/>

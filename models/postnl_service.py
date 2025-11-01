@@ -1,13 +1,12 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-from datetime import datetime
 import base64
 import logging
 
 _logger = logging.getLogger(__name__)
 
 try:
-    import paramiko  # Optional; on Odoo.sh/Odoo Cloud may not be available
+    import paramiko
 except Exception:
     paramiko = None
 
@@ -17,7 +16,6 @@ class PostnlService(models.AbstractModel):
     _description = "PostNL Service Layer (exports/imports)"
     _inherit = ["mail.thread"]
 
-    # ---------- ORDER EXPORT ----------
     def _export_orders_to_postnl(self, orders):
         self = self.sudo()
         count = 0
@@ -37,10 +35,8 @@ class PostnlService(models.AbstractModel):
         _logger.info("PostNL EXPORT summary: %s exported", count)
         return count
 
-    # ---------- SHIPMENT IMPORT ----------
     def _import_shipments_update_orders(self):
         done = 0
-        # Demo behavior: mark exported orders as shipped and assign a fake 3S code
         staged = self.env["postnl.order"].search([("state", "=", "exported")], limit=50)
         for rec in staged:
             try:
@@ -55,7 +51,6 @@ class PostnlService(models.AbstractModel):
         _logger.info("PostNL IMPORT shipments summary: %s marked shipped", done)
         return done
 
-    # ---------- PRODUCT EXPORT (Woo parity) ----------
     @api.model
     def _cron_export_products(self, limit=200):
         prods = self.env["product.template"].search([("sale_ok", "=", True)], limit=limit)
@@ -65,7 +60,6 @@ class PostnlService(models.AbstractModel):
         xml = self._build_products_xml(prods)
         try:
             self._send_file("products", "products_export.xml", xml.encode("utf-8"))
-            # Attach to first product for audit
             self._attach_generic(xml, name="products_export.xml", model="product.template", res_id=prods[0].id)
             _logger.info("PostNL PRODUCT EXPORT: %s products exported", len(prods))
             return len(prods)
@@ -73,17 +67,14 @@ class PostnlService(models.AbstractModel):
             _logger.exception("PostNL PRODUCT EXPORT failed")
             return 0
 
-    # ---------- INVENTORY IMPORT (Woo parity) ----------
     @api.model
     def _cron_import_inventory(self):
-        # Demo: touch products to log import path
         now = fields.Datetime.now()
         pts = self.env["product.template"].search([("sale_ok", "=", True)], limit=200)
         pts.write({"website_published": True})
         _logger.info("PostNL INVENTORY IMPORT (demo): touched %s products at %s", len(pts), now)
         return len(pts)
 
-    # ---------- helpers ----------
     def _attach_payload(self, order, data_str, fname="payload.xml"):
         data = data_str.encode("utf-8") if isinstance(data_str, str) else data_str
         self.env["ir.attachment"].sudo().create({
@@ -153,7 +144,6 @@ class PostnlService(models.AbstractModel):
         for p in products:
             ean = p.barcode or ""
             sku = p.default_code or ean or str(p.id)
-            # FIX: removed the extra closing parenthesis here ↓↓↓
             items.append(f"""
             <item>
               <sku>{sku}</sku>
@@ -171,13 +161,12 @@ class PostnlService(models.AbstractModel):
 </items>"""
         return xml
 
-    # --- SFTP send (optional, logs everything; simulates if paramiko missing) ---
     def _send_file(self, channel, filename, bytes_data):
         ICP = self.env["ir.config_parameter"].sudo()
         host = ICP.get_param("postnl.sftp_host")
-        port = int(ICP.get_param("postnl.sftp_port", 22) or 22)
-        user = ICP.get_param("postnl.sftp_user")
-        passwd = ICP.get_param("postnl.sftp_password")
+        port = int(ICP.get_param("postnl_sftp_port", 22) or 22)
+        user = ICP.get_param("postnl_sftp_user")
+        passwd = ICP.get_param("postnl_sftp_password")
         remote_map = {
             "orders": ICP.get_param("postnl.remote_order_path", "/in/orders"),
             "products": ICP.get_param("postnl.remote_order_path", "/in/orders"),
