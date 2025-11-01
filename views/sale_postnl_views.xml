@@ -1,6 +1,6 @@
 <odoo>
   <data>
-    <!-- Add a PostNL tab on the Sales Order -->
+    <!-- 1) Add a PostNL tab on the Sales Order -->
     <record id="view_order_form_postnl" model="ir.ui.view">
       <field name="name">sale.order.form.postnl</field>
       <field name="model">sale.order</field>
@@ -25,25 +25,27 @@
       </field>
     </record>
 
-    <!-- Add gift message column to the order line list -->
+    <!-- 2) Add gift message column in the inline list on SO -->
     <record id="view_order_form_postnl_lines" model="ir.ui.view">
       <field name="name">sale.order.form.postnl.lines</field>
       <field name="model">sale.order</field>
       <field name="inherit_id" ref="sale.view_order_form"/>
       <field name="arch" type="xml">
+        <!-- Odoo 18 uses <list>, not <tree> -->
         <xpath expr="//field[@name='order_line']/list" position="inside">
           <field name="postnl_gift_message"/>
         </xpath>
       </field>
     </record>
 
-    <!-- Optional: also show in the order line form popup -->
+    <!-- 3) Add gift message to the order-line popup form (correct parent view) -->
     <record id="view_order_line_form_postnl" model="ir.ui.view">
       <field name="name">sale.order.line.form.postnl</field>
       <field name="model">sale.order.line</field>
-      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="inherit_id" ref="sale.view_order_line_form"/>
       <field name="arch" type="xml">
-        <xpath expr="//field[@name='order_line']/form/sheet/group" position="inside">
+        <!-- Robust anchor inside the line form -->
+        <xpath expr="//sheet/group" position="inside">
           <field name="postnl_gift_message"/>
         </xpath>
       </field>
