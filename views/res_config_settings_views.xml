@@ -1,17 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
   <data>
     <record id="view_postnl_res_config_settings" model="ir.ui.view">
       <field name="name">res.config.settings.view.form.postnl</field>
       <field name="model">res.config.settings</field>
-
-      <!-- Odoo 18: inherit from base_setup -->
       <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
-
       <field name="arch" type="xml">
-        <!-- Safe, stable anchor -->
-        <xpath expr="//sheet" position="inside">
+        <!-- Corrected XPath targeting the settings container -->
+        <xpath expr="//div[hasclass('settings')]//sheet" position="inside">
           <div class="app_settings_block" string="PostNL" data-key="odoo_postnl_integration">
-            <h2>Odoo-PostNL-Integration</h2>
+            <h2>PostNL Integration</h2>
             <div class="row mt16 o_settings_container">
               <div class="col-12 col-md-6">
                 <div class="o_form_label">SFTP</div>
@@ -49,12 +47,13 @@
       </field>
     </record>
 
-    <!-- Action + Menu (unchanged, included here for completeness) -->
+    <!-- Action + Menu -->
     <record id="action_postnl_settings" model="ir.actions.act_window">
-      <field name="name">Settings</field>
+      <field name="name">PostNL Settings</field>
       <field name="res_model">res.config.settings</field>
       <field name="view_mode">form</field>
       <field name="target">current</field>
+      <field name="context">{'module': 'odoo_postnl_integration'}</field>
     </record>
 
     <menuitem id="menu_postnl_settings"
