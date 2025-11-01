@@ -1,11 +1,10 @@
 <odoo>
   <data>
-    <!-- Root App menu (MUST be loaded first in manifest).
-         Using Monta's icon makes the launcher tile appear immediately. -->
+    <!-- Root App menu (load this file early; uses Monta icon for launcher tile) -->
     <menuitem id="menu_postnl_root"
               name="Odoo-PostNL-Integration"
               sequence="15"
-              web_icon="monta,static/description/icon.png"/>
+              web_icon="~/static/description/icon.png"/>
 
     <!-- Sections -->
     <menuitem id="menu_postnl_ops" name="Operations" parent="menu_postnl_root" sequence="10"/>
@@ -48,15 +47,16 @@
     <menuitem id="menu_postnl_run_import_inventory" name="Import Inventory (Now)"
               parent="menu_postnl_ops" action="action_postnl_run_import_inventory" sequence="50"/>
 
-    <!-- Settings shortcut (optional) -->
+    <!-- Settings shortcut (visible to PostNL Manager only) -->
     <record id="action_postnl_settings" model="ir.actions.act_window">
       <field name="name">Settings</field>
       <field name="res_model">res.config.settings</field>
       <field name="view_mode">form</field>
       <field name="target">current</field>
     </record>
+    <!-- FIX: use the actual group id we created in security.xml -->
     <menuitem id="menu_postnl_settings" name="Settings"
               parent="menu_postnl_cfg" action="action_postnl_settings"
-              sequence="90" groups="postnl_integration.group_postnl_manager"/>
+              sequence="90" groups="group_postnl_manager"/>
   </data>
 </odoo>
