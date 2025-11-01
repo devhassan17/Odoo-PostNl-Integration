@@ -1,6 +1,9 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 import hashlib
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class PostnlOrder(models.Model):
     _name = "postnl.order"
@@ -53,9 +56,19 @@ class PostnlOrder(models.Model):
         seq = self.env["ir.sequence"].next_by_code("postnl.order")
         return seq or _("PostNL Order")
 
+    # -------- logging helper ----------
+    def _log(self, level, msg, **kw):
+        payload = {"order": self.name or self.id, **kw}
+        if level == "debug": _logger.debug(msg, payload)
+        elif level == "warning": _logger.warning(msg, payload)
+        elif level == "error": _logger.error(msg, payload)
+        else: _logger.info(msg, payload)
+
     def _post_single_error(self, text):
+        """Post only once per error hash to chatter (but ALWAYS log)."""
         self.ensure_one()
         text = text or _("Unknown error")
+        self._log("error", "PostNL error: %s", error=text)
         h = hashlib.sha1(text.encode("utf-8")).hexdigest()
         if h != (self.last_error_hash or ""):
             self.message_post(body=_("PostNL error: %s") % text)
@@ -67,13 +80,20 @@ class PostnlOrder(models.Model):
 
     def _apply_shipping_rule(self):
         self.ensure_one()
+        self._log("debug", "Apply shipping rule start", weight=self.weight_total, country=self.country_id.code if self.country_id else None)
+
+        # Priority: explicit rules → delivery options mapping → default
         Rule = self.env["postnl.shipping.rule"]
         rule = Rule._match(country=self.country_id, weight=self.weight_total)
         if rule:
             self.write({"shipping_rule_id": rule.id, "shipping_code": rule.shipping_code})
+            self._log("info", "Matched shipping rule", rule=rule.name, code=rule.shipping_code)
             return
-        default_code = self.env["ir.config_parameter"].sudo().get_param("postnl.default_shipping_code", default="3085")
-        self.write({"shipping_rule_id": False, "shipping_code": default_code})
+
+        # Delivery options influence (from sale.order fields)
+        code = self.sale_id._postnl_pick_shipping_code_fallback(self.country_id)
+        self.write({"shipping_rule_id": False, "shipping_code": code})
+        self._log("info", "Applied delivery-options fallback code", code=code)
 
     def action_queue_export(self):
         for rec in self:
@@ -81,45 +101,53 @@ class PostnlOrder(models.Model):
                 raise UserError(_("Please link a Sales Order first."))
             if not rec.shipping_code:
                 rec._apply_shipping_rule()
+            rec._log("info", "Queued for export")
             rec.write({"state": "queued"})
         return True
 
     def action_mark_exported(self):
+        self._log("info", "Marked as exported")
         self.write({"state": "exported", "last_sync_at": fields.Datetime.now()})
         return True
 
     def action_mark_shipped(self):
+        self._log("info", "Marked as shipped")
         self.write({"state": "shipped", "last_sync_at": fields.Datetime.now()})
+        # Optional: auto-complete order if paid, etc. (left conservative)
         return True
 
     def action_open_tnt(self):
         self.ensure_one()
         if not self.tnt_url:
             raise UserError(_("No tracking URL."))
+        self._log("info", "Open Track & Trace", url=self.tnt_url)
         return {"type": "ir.actions.act_url", "url": self.tnt_url, "target": "new"}
 
+    # ---------- CRONS ----------
     @api.model
     def _cron_scan_sale_orders(self):
         Sale = self.env["sale.order"]
         sales = Sale.search([("state", "in", ["sale", "done"])], limit=200)
         created = 0
         for so in sales:
-            if self.search_count([("sale_id","=",so.id)]):
+            if self.search_count([("sale_id", "=", so.id)]):
                 continue
             rec = self.create({"name": so.name, "sale_id": so.id})
             rec._apply_shipping_rule()
+            rec._log("info", "Staged from sale.order", sale=so.name)
             created += 1
+        _logger.info("PostNL SCAN: created %s staged orders", created)
         return created
 
     @api.model
     def _cron_export_orders(self):
-        service = self.env["postnl.service"]
-        orders = self.search([("state","=","queued")], order="id asc", limit=50)
+        orders = self.search([("state", "=", "queued")], order="id asc", limit=50)
+        _logger.info("PostNL EXPORT: %s orders queued", len(orders))
         if not orders:
             return 0
-        return service._export_orders_to_postnl(orders)
+        return self.env["postnl.service"]._export_orders_to_postnl(orders)
 
     @api.model
     def _cron_import_shipments(self):
-        service = self.env["postnl.service"]
-        return service._import_shipments_update_orders()
+        _logger.info("PostNL IMPORT shipments: start")
+        return self.env["postnl.service"]._import_shipments_update_orders()
