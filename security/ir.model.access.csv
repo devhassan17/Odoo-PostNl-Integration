@@ -1,4 +1,3 @@
-#postnl_odoo_integration/security/ir.model.access.csv
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_postnl_shipping_rule_settings,access_postnl_shipping_rule_settings,model_postnl_shipping_rule,base.group_system,1,1,1,1
-access_postnl_shipment_import_settings,access_postnl_shipment_import_settings,model_postnl_shipment_import,base.group_system,1,1,1,1
+access_postnl_shipping_rule,access_postnl_shipping_rule,model_postnl_shipping_rule,base.group_system,1,1,1,1
+access_postnl_shipment_import,access_postnl_shipment_import,model_postnl_shipment_import,base.group_system,1,1,1,1
