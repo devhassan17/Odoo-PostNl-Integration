@@ -1,10 +1,12 @@
-<!-- postnl_odoo_integration/views/res_config_settings_views.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <record id="res_config_settings_view_form_postnl" model="ir.ui.view">
         <field name="name">res.config.settings.view.form.postnl</field>
         <field name="model">res.config.settings</field>
-        <field name="inherit_id" ref="base.view_res_config_settings"/>
+        <!-- IMPORTANT: correct base settings view for Odoo 18 -->
+        <field name="inherit_id" ref="base.view_general_configuration"/>
         <field name="arch" type="xml">
+            <!-- Inject our block into the main settings container -->
             <xpath expr="//div[@id='settings']" position="inside">
                 <div class="app_settings_block" data-string="PostNL" string="PostNL" data-key="postnl">
                     <h2>PostNL Integration</h2>
