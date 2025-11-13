@@ -1,30 +1,32 @@
-<!-- postnl_odoo_integration/views/sale_order_views.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="view_order_form_inherit_postnl" model="ir.ui.view">
-        <field name="name">sale.order.form.inherit.postnl</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_order_form"/>
-        <field name="arch" type="xml">
-            <!-- Add button -->
-            <xpath expr="//header" position="inside">
-                <button name="action_postnl_export"
-                        type="object"
-                        string="Export to PostNL"
-                        class="btn-primary"
-                        attrs="{'invisible': [('state','not in', ['sale','done'])]}"/>
-            </xpath>
+  <record id="view_order_form_inherit_postnl" model="ir.ui.view">
+    <field name="name">sale.order.form.inherit.postnl</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale.view_order_form"/>
+    <field name="arch" type="xml">
 
-            <!-- Add tab / fields -->
-            <xpath expr="//sheet/notebook" position="inside">
-                <page string="PostNL">
-                    <group>
-                        <field name="postnl_shipping_code" readonly="1"/>
-                        <field name="postnl_exported" readonly="1"/>
-                        <field name="postnl_last_export_date" readonly="1"/>
-                        <field name="postnl_tracking_ref" readonly="1"/>
-                    </group>
-                </page>
-            </xpath>
-        </field>
-    </record>
+      <!-- Add button in header -->
+      <xpath expr="//header" position="inside">
+        <button name="action_postnl_export"
+                type="object"
+                string="Export to PostNL"
+                class="btn-primary"
+                invisible="not state in ('sale','done')"/>
+      </xpath>
+
+      <!-- Add PostNL tab -->
+      <xpath expr="//sheet/notebook" position="inside">
+        <page string="PostNL">
+          <group>
+            <field name="postnl_shipping_code" readonly="1"/>
+            <field name="postnl_exported" readonly="1"/>
+            <field name="postnl_last_export_date" readonly="1"/>
+            <field name="postnl_tracking_ref" readonly="1"/>
+          </group>
+        </page>
+      </xpath>
+
+    </field>
+  </record>
 </odoo>
