@@ -1,28 +1,25 @@
-# -*- coding: utf-8 -*-
+# postnl_odoo_integration/__manifest__.py
 {
-    "name": "monta — postnl integration",
-    "summary": "PostNL for Odoo via Monta: stage orders, export orders/products, import shipments/stock, delivery options, age check, gift messages, rule-based shipping codes.",
-    "version": "18.0.3.0.0",
-    "category": "Operations/Warehouse",
-    "author": "Your Company",
-    "website": "https://example.com",
+    "name": "Odoo-PostNL-Integration",
+    "summary": "Connect Odoo 18 with PostNL (orders export, shipments import, weight-based shipping codes).",
+    "version": "18.0.1.0.0",
+    "author": "Ali Hassan",
     "license": "LGPL-3",
-    "depends": ["base", "mail", "sale_management", "stock", "contacts"],
-    # We no longer need our own launcher tile; we live under Monta
-    "application": True,
-    "installable": True,
-    "icon": "static/description/icon.png",
-    "images": ["static/description/icon.png"],
-    "data": [
-        "security/security.xml",
-        "security/ir.model.access.csv",
-        "views/postnl_menus.xml",               # load menus early
-        "views/postnl_order_views.xml",
-        "views/postnl_shipping_rule_views.xml",
-        "views/res_config_settings_views.xml",
-        "views/sale_postnl_views.xml",
-        "data/ir_sequence_data.xml",
-        "data/ir_cron_data.xml",
+    "category": "Inventory/Shipping",
+    "depends": [
+        "base",
+        "sale_management",
+        "stock",
+        "product",
     ],
-    "post_init_hook": "post_init_hook",         # <— reparent our app under Monta
+    "data": [
+        "security/ir.model.access.csv",
+        "views/res_config_settings_views.xml",
+        "views/postnl_shipping_rule_views.xml",
+        "views/sale_order_views.xml",
+        "views/stock_picking_views.xml",
+        "data/ir_cron_postnl_shipment_import.xml",
+    ],
+    "installable": True,
+    "application": False,
 }

@@ -1,30 +1,57 @@
+# postnl_odoo_integration/models/postnl_shipping_rule.py
 from odoo import api, fields, models, _
-import logging
-_logger = logging.getLogger(__name__)
+from odoo.exceptions import ValidationError
 
-class PostnlShippingRule(models.Model):
+
+class PostNLShippingRule(models.Model):
     _name = "postnl.shipping.rule"
-    _description = "PostNL Shipping Code Rule"
-    _order = "sequence, max_weight"
+    _description = "PostNL Shipping Rule"
+    _order = "sequence, id"
 
-    name = fields.Char(required=True, default=lambda self: _("Rule"))
-    active = fields.Boolean(default=True)
+    name = fields.Char(string="Name", required=True)
     sequence = fields.Integer(default=10)
-    shipping_code = fields.Char(required=True, help="PostNL (agent) code to use if rule matches.")
-    max_weight = fields.Float(string="Max Weight (kg)", required=True, digits=(12, 3))
-    country_ids = fields.Many2many("res.country", string="Countries", required=True)
+
+    shipping_code = fields.Char(string="PostNL Shipping Code", required=True)
+
+    weight_min = fields.Float(string="Min Weight (kg)", default=0.0)
+    weight_max = fields.Float(string="Max Weight (kg)")
+    no_max_weight = fields.Boolean(string="No Max Limit")
+
+    country_ids = fields.Many2many(
+        "res.country",
+        "postnl_shipping_rule_country_rel",
+        "rule_id",
+        "country_id",
+        string="Countries",
+    )
+
+    active = fields.Boolean(default=True)
+
+    @api.constrains("weight_min", "weight_max", "no_max_weight")
+    def _check_weights(self):
+        for rule in self:
+            if (
+                not rule.no_max_weight
+                and rule.weight_max
+                and rule.weight_max < rule.weight_min
+            ):
+                raise ValidationError(_("Max weight must be greater than min weight."))
 
     @api.model
-    def _match(self, country, weight):
-        if not country or weight is None:
-            _logger.info("POSTNL RULE: no match (country=%s, weight=%s)", country and country.code, weight)
-            return False
-        rules = self.search([
-            ("active","=",True),
-            ("country_ids","in",[country.id]),
-            ("max_weight",">=",weight),
-        ], order="sequence asc, max_weight asc", limit=1)
-        rule = rules[:1] or False
-        _logger.info("POSTNL RULE: country=%s weight=%.3f -> %s",
-                     country.code, weight, rule and f"{rule.name}({rule.shipping_code})")
-        return rule
+    def get_shipping_code(self, country, weight_kg):
+        """Return best matching shipping_code for country + weight."""
+        domain = [("active", "=", True)]
+        if country:
+            domain.append(("country_ids", "in", country.id))
+        rules = self.search(domain, order="sequence, id")
+        for rule in rules:
+            if weight_kg < rule.weight_min:
+                continue
+            if (
+                not rule.no_max_weight
+                and rule.weight_max
+                and weight_kg > rule.weight_max
+            ):
+                continue
+            return rule.shipping_code
+        return False

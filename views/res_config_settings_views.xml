@@ -1,62 +1,94 @@
+<!-- postnl_odoo_integration/views/res_config_settings_views.xml -->
 <odoo>
-  <data>
-    <record id="view_postnl_res_config_settings" model="ir.ui.view">
-      <field name="name">res.config.settings.view.form.postnl</field>
-      <field name="model">res.config.settings</field>
-      <field name="inherit_id" ref="base.res_config_settings_view_form"/>
-      <field name="arch" type="xml">
-        <xpath expr="//form" position="inside">
-          <app string="Monta — PostNL Integration" name="monta_postnl" data-key="monta_postnl">
-            <block title="PostNL Connection">
-              <setting string="SFTP Host / Port">
-                <div class="row">
-                  <div class="col-8"><field name="postnl_sftp_host"/></div>
-                  <div class="col-4"><field name="postnl_sftp_port"/></div>
-                </div>
-              </setting>
-              <setting string="SFTP Credentials">
-                <div class="row">
-                  <div class="col-6"><field name="postnl_sftp_user"/></div>
-                  <div class="col-6"><field name="postnl_sftp_password" password="True"/></div>
-                </div>
-              </setting>
-              <setting string="Remote Paths">
-                <div class="row">
-                  <div class="col-12"><field name="postnl_remote_order_path"/></div>
-                  <div class="col-12"><field name="postnl_remote_shipment_path"/></div>
-                  <div class="col-12"><field name="postnl_remote_stock_path"/></div>
-                </div>
-              </setting>
-            </block>
+    <record id="res_config_settings_view_form_postnl" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.postnl</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.view_res_config_settings"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='settings']" position="inside">
+                <div class="app_settings_block" data-string="PostNL" string="PostNL" data-key="postnl">
+                    <h2>PostNL Integration</h2>
 
-            <block title="Behavior">
-              <setting string="Defaults &amp; Templates">
-                <div class="row">
-                  <div class="col-6"><field name="postnl_batch_size"/></div>
-                  <div class="col-6"><field name="postnl_default_shipping_code"/></div>
-                  <div class="col-12"><field name="postnl_tnt_url_template"/></div>
-                </div>
-              </setting>
-              <setting string="Schedulers">
-                <div class="row">
-                  <div class="col-4"><field name="postnl_enable_scan_cron"/></div>
-                  <div class="col-4"><field name="postnl_enable_export_cron"/></div>
-                  <div class="col-4"><field name="postnl_enable_import_cron"/></div>
-                </div>
-              </setting>
-            </block>
+                    <!-- GENERAL CONFIGURATION -->
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="postnl_enabled"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="postnl_enabled"/>
+                                <div class="text-muted">
+                                    Enable PostNL ECS integration for order export and shipment import.
+                                </div>
+                                <div class="mt8">
+                                    <field name="postnl_customer_number"/>
+                                    <field name="postnl_contract_number"/>
+                                    <field name="postnl_default_warehouse_id"/>
+                                    <field name="postnl_delivery_product_id"/>
+                                </div>
+                                <button type="object"
+                                        name="action_test_general_config"
+                                        string="Test General Config"
+                                        class="btn btn-secondary mt8"/>
+                            </div>
+                        </div>
+                    </div>
 
-            <block title="Diagnostics &amp; Tests">
-              <setting string="One-click actions">
-                <button name="action_postnl_test_sftp" type="object" string="Test SFTP" class="btn-secondary me-2"/>
-                <button name="action_postnl_scan_now"  type="object" string="Scan Sales Orders" class="me-2"/>
-                <button name="action_postnl_export_now" type="object" string="Export Queued Orders" class="me-2"/>
-                <button name="action_postnl_import_now" type="object" string="Import Shipments"/>
-              </setting>
-            </block>
-          </app>
-        </xpath>
-      </field>
+                    <!-- SFTP CONFIGURATION -->
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <h3>SFTP Configuration</h3>
+                                <field name="postnl_sftp_host"/>
+                                <field name="postnl_sftp_port"/>
+                                <field name="postnl_sftp_username"/>
+                                <field name="postnl_sftp_password" password="True"/>
+                                <field name="postnl_sftp_path_orders"/>
+                                <field name="postnl_sftp_path_shipments"/>
+                                <button type="object"
+                                        name="action_test_sftp_connection"
+                                        string="Test SFTP Connection"
+                                        class="btn btn-secondary mt8"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ORDER EXPORT -->
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <h3>Order Export</h3>
+                                <field name="postnl_export_auto"/>
+                                <field name="postnl_export_trigger_state"/>
+                                <field name="postnl_export_filename_pattern"/>
+                                <button type="object"
+                                        name="action_test_order_export"
+                                        string="Test Order Export"
+                                        class="btn btn-secondary mt8"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SHIPMENT IMPORT -->
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <h3>Shipment Import</h3>
+                                <field name="postnl_import_auto"/>
+                                <field name="postnl_import_auto_done"/>
+                                <button type="object"
+                                        name="action_test_shipment_import"
+                                        string="Test Shipment Import"
+                                        class="btn btn-secondary mt8"/>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </xpath>
+        </field>
     </record>
-  </data>
 </odoo>

@@ -1,0 +1,13 @@
+<!-- postnl_odoo_integration/data/ir_cron_postnl_shipment_import.xml -->
+<odoo>
+    <record id="ir_cron_postnl_shipment_import" model="ir.cron">
+        <field name="name">PostNL Shipment Import</field>
+        <field name="model_id" ref="model_postnl_shipment_import"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_import_shipments()</field>
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+</odoo>
