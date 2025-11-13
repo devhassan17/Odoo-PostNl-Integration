@@ -1,97 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Inherit the base settings view to add the PostNL integration section -->
-    <record id="res_config_settings_view_form_postnl" model="ir.ui.view">
-        <field name="name">res.config.settings.view.form.inherit.postnl</field>
-        <field name="model">res.config.settings</field>
-        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//form" position="inside">
-                <!-- Define a new application section with an emoji in the title -->
-                <app string="🍖 PostNL Integration" name="postnl_integration">
-                    <block title="PostNL Connection">
-                        <setting string="SFTP Host / Port">
-                            <div class="row">
-                                <div class="col-8">
+    <data>
+        <record id="res_config_settings_view_form_postnl" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.postnl</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="priority" eval="100"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='settings']" position="inside">
+                    <div class="app_settings_block" data-string="PostNL" string="PostNL"
+                         name="monta_postnl" groups="base.group_system" icon="fa-truck">
+                        <h2>PostNL Integration</h2>
+
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_right_pane">
                                     <field name="postnl_sftp_host"/>
-                                </div>
-                                <div class="col-4">
                                     <field name="postnl_sftp_port"/>
+                                    <field name="postnl_sftp_user"/>
+                                    <field name="postnl_sftp_password" password="True"/>
                                 </div>
                             </div>
-                        </setting>
-                        <setting string="SFTP Credentials">
-                            <div class="row">
-                                <div class="col-6">
-                                    <field name="postnl_sftp_username"/>
-                                </div>
-                                <div class="col-6">
-                                    <field name="postnl_sftp_private_key" widget="text"/>
-                                </div>
-                            </div>
-                        </setting>
-                        <setting string="Remote Paths">
-                            <div class="row">
-                                <div class="col-12">
-                                    <field name="postnl_sftp_path_orders"/>
-                                </div>
-                                <div class="col-12">
-                                    <field name="postnl_sftp_path_shipments"/>
-                                </div>
-                            </div>
-                        </setting>
-                    </block>
 
-                    <block title="Behavior">
-                        <setting string="Defaults &amp; Templates">
-                            <div class="row">
-                                <div class="col-6">
-                                    <field name="postnl_default_warehouse_id"/>
-                                </div>
-                                <div class="col-6">
-                                    <field name="postnl_delivery_product_id"/>
-                                </div>
-                                <div class="col-12">
-                                    <field name="postnl_customer_number"/>
-                                </div>
-                                <div class="col-12">
-                                    <field name="postnl_contract_number"/>
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <field name="postnl_remote_order_path"/>
+                                    <field name="postnl_remote_shipment_path"/>
+                                    <field name="postnl_remote_stock_path"/>
                                 </div>
                             </div>
-                        </setting>
-                        <setting string="Schedulers">
-                            <div class="row">
-                                <div class="col-6">
-                                    <field name="postnl_export_auto"/>
-                                </div>
-                                <div class="col-6">
-                                    <field name="postnl_import_auto"/>
-                                </div>
-                                <div class="col-6">
-                                    <field name="postnl_import_auto_done"/>
+
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <field name="postnl_batch_size"/>
+                                    <field name="postnl_default_shipping_code"/>
+                                    <field name="postnl_tnt_url_template"/>
                                 </div>
                             </div>
-                        </setting>
-                    </block>
 
-                    <block title="Weight Settings">
-                        <setting string="Shipping Weight Rules">
-                            <field name="postnl_weight_line_ids" mode="tree,form"
-                                   context="{'tree_view_ref': 'postnl_module.view_postnl_weight_rule_tree'}"/>
-                        </setting>
-                    </block>
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <field name="postnl_enable_scan_cron"/>
+                                    <field name="postnl_enable_export_cron"/>
+                                    <field name="postnl_enable_import_cron"/>
+                                </div>
+                            </div>
 
-                    <block title="Diagnostics &amp; Tests">
-                        <setting string="Test PostNL Setup">
-                            <button name="action_test_general_config" type="object" string="Test General Config" class="btn-secondary me-2"/>
-                            <button name="action_test_sftp_connection" type="object" string="Test SFTP" class="btn-secondary me-2"/>
-                            <button name="action_test_order_export" type="object" string="Test Order Export" class="btn-secondary me-2"/>
-                            <button name="action_test_shipment_import" type="object" string="Test Shipment Import" class="btn-secondary me-2"/>
-                        </setting>
-                    </block>
-
-                </app>
-            </xpath>
-        </field>
-    </record>
+                            <div class="col-12">
+                                <button name="action_postnl_test_sftp" type="object"
+                                        string="Test SFTP Connection"
+                                        class="btn btn-primary"/>
+                                <button name="action_postnl_scan_now" type="object"
+                                        string="Run Scan Now"
+                                        class="btn btn-secondary"/>
+                                <button name="action_postnl_export_now" type="object"
+                                        string="Export Orders"
+                                        class="btn btn-secondary"/>
+                                <button name="action_postnl_import_now" type="object"
+                                        string="Import Shipments"
+                                        class="btn btn-secondary"/>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
 </odoo>
