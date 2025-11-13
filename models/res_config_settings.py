@@ -6,12 +6,12 @@ class ResConfigSettings(models.TransientModel):
 
     postnl_sftp_host = fields.Char(string="SFTP Host")
     postnl_sftp_port = fields.Integer(string="SFTP Port", default=22)
-    postnl_sftp_user = fields.Char(string="SFTP Username")
+    postnl_sftp_username = fields.Char(string="SFTP Username")
     postnl_sftp_password = fields.Char(string="SFTP Password")
-    postnl_sftp_private_key = fields.Text(string="SFTP Private Key")
-    postnl_remote_order_path = fields.Char(string="Remote Path (Orders)")
-    postnl_remote_shipment_path = fields.Char(string="Remote Path (Shipments)")
-    postnl_remote_stock_path = fields.Char(string="Remote Path (Stock File)")
+    postnl_sftp_private_key = fields.Text(string="SFTP Private Key")  # Optional, if you need key auth
+    postnl_remote_order_path = fields.Char(string="Remote Order Path")
+    postnl_remote_shipment_path = fields.Char(string="Remote Shipment Path")
+    postnl_remote_stock_path = fields.Char(string="Remote Stock Path")
 
     postnl_batch_size = fields.Integer(string="Batch Size", default=50)
     postnl_default_shipping_code = fields.Char(string="Default Shipping Code")
@@ -28,7 +28,7 @@ class ResConfigSettings(models.TransientModel):
         res.update(
             postnl_sftp_host=IrConfig.get_param('postnl_sftp_host', default=''),
             postnl_sftp_port=int(IrConfig.get_param('postnl_sftp_port', default=22)),
-            postnl_sftp_user=IrConfig.get_param('postnl_sftp_user', default=''),
+            postnl_sftp_username=IrConfig.get_param('postnl_sftp_username', default=''),
             postnl_sftp_password=IrConfig.get_param('postnl_sftp_password', default=''),
             postnl_sftp_private_key=IrConfig.get_param('postnl_sftp_private_key', default=''),
             postnl_remote_order_path=IrConfig.get_param('postnl_remote_order_path', default=''),
@@ -48,7 +48,7 @@ class ResConfigSettings(models.TransientModel):
         IrConfig = self.env['ir.config_parameter'].sudo()
         IrConfig.set_param('postnl_sftp_host', self.postnl_sftp_host or '')
         IrConfig.set_param('postnl_sftp_port', self.postnl_sftp_port or 22)
-        IrConfig.set_param('postnl_sftp_user', self.postnl_sftp_user or '')
+        IrConfig.set_param('postnl_sftp_username', self.postnl_sftp_username or '')
         IrConfig.set_param('postnl_sftp_password', self.postnl_sftp_password or '')
         IrConfig.set_param('postnl_sftp_private_key', self.postnl_sftp_private_key or '')
         IrConfig.set_param('postnl_remote_order_path', self.postnl_remote_order_path or '')
