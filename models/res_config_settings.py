@@ -84,6 +84,6 @@ class PostnlWeightRule(models.Model):
     _description = 'PostNL Weight Rule'
 
     shipping_code = fields.Char(string='Shipping Code', required=True)
-    min_weight = fields.Float(string='Min Weight', required=True)
-    max_weight = fields.Float(string='Max Weight', required=True)
+    min_weight = fields.Float(string='Min Weight (kg)', required=True)
+    max_weight = fields.Float(string='Max Weight (kg)', required=True)
     country_ids = fields.Many2many('res.country', string='Countries')
