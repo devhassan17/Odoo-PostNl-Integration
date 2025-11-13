@@ -33,7 +33,7 @@
           </group>
           <group string="Weight">
             <field name="weight_min"/>
-            <field name="weight_max" attrs="{'invisible': [('no_max_weight','=',True)]}"/>
+            <field name="weight_max" invisible="no_max_weight"/>
             <field name="no_max_weight"/>
           </group>
           <group string="Countries">
