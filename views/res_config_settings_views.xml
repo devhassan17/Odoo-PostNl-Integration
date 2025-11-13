@@ -1,136 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <data>
-        <record id="view_postnl_res_config_settings" model="ir.ui.view">
-            <field name="name">res.config.settings.view.form.postnl</field>
-            <field name="model">res.config.settings</field>
-            <!-- This is the correct base settings view on your instance -->
-            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
-            <field name="arch" type="xml">
-                <!-- Insert a new app section inside the main settings form -->
-                <xpath expr="//form" position="inside">
-                    <app string="PostNL Integration" name="postnl_integration" data-key="postnl_integration">
+  <data>
+    <record id="view_postnl_res_config_settings" model="ir.ui.view">
+      <field name="name">res.config.settings.view.form.postnl</field>
+      <field name="model">res.config.settings</field>
+      <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//form" position="inside">
+          <app string="Monta — PostNL Integration" name="monta_postnl" data-key="monta_postnl">
 
-                        <!-- ========== BLOCK: GENERAL CONFIGURATION ========== -->
-                        <block title="General Configuration">
-                            <setting string="Enable & Defaults">
-                                <div class="row">
-                                    <div class="col-12 mb-2">
-                                        <field name="postnl_enabled"/>
-                                    </div>
-                                    <div class="col-6">
-                                        <field name="postnl_customer_number"/>
-                                    </div>
-                                    <div class="col-6">
-                                        <field name="postnl_contract_number"/>
-                                    </div>
-                                    <div class="col-6 mt-2">
-                                        <field name="postnl_default_warehouse_id"/>
-                                    </div>
-                                    <div class="col-6 mt-2">
-                                        <field name="postnl_delivery_product_id"/>
-                                    </div>
-                                </div>
-                                <div class="mt-2">
-                                    <button name="action_test_general_config"
-                                            type="object"
-                                            string="Test General Config"
-                                            class="btn-secondary"/>
-                                </div>
-                            </setting>
-                        </block>
+            <block title="PostNL Connection">
+              <setting string="SFTP Host / Port">
+                <div class="row">
+                  <div class="col-8">
+                    <field name="postnl_sftp_host"/>
+                  </div>
+                  <div class="col-4">
+                    <field name="postnl_sftp_port"/>
+                  </div>
+                </div>
+              </setting>
+              <setting string="SFTP Credentials">
+                <div class="row">
+                  <div class="col-6">
+                    <field name="postnl_sftp_username"/>
+                  </div>
+                  <div class="col-6">
+                    <field name="postnl_sftp_password" password="True"/>
+                  </div>
+                </div>
+              </setting>
+              <setting string="Remote Paths">
+                <div class="row">
+                  <div class="col-12">
+                    <field name="postnl_sftp_path_orders"/>
+                  </div>
+                  <div class="col-12">
+                    <field name="postnl_sftp_path_shipments"/>
+                  </div>
+                </div>
+              </setting>
+            </block>
 
-                        <!-- ========== BLOCK: SFTP CONFIGURATION ========== -->
-                        <block title="SFTP Configuration">
-                            <setting string="Host & Port">
-                                <div class="row">
-                                    <div class="col-8">
-                                        <field name="postnl_sftp_host"/>
-                                    </div>
-                                    <div class="col-4">
-                                        <field name="postnl_sftp_port"/>
-                                    </div>
-                                </div>
-                            </setting>
+            <block title="Behavior">
+              <setting string="Defaults &amp; Templates">
+                <div class="row">
+                  <div class="col-6">
+                    <field name="postnl_default_warehouse_id"/>
+                  </div>
+                  <div class="col-6">
+                    <field name="postnl_delivery_product_id"/>
+                  </div>
+                  <div class="col-12">
+                    <field name="postnl_customer_number"/>
+                  </div>
+                  <div class="col-12">
+                    <field name="postnl_contract_number"/>
+                  </div>
+                </div>
+              </setting>
+              <setting string="Schedulers">
+                <div class="row">
+                  <div class="col-6">
+                    <field name="postnl_export_auto"/>
+                  </div>
+                  <div class="col-6">
+                    <field name="postnl_import_auto"/>
+                  </div>
+                  <div class="col-6">
+                    <field name="postnl_import_auto_done"/>
+                  </div>
+                </div>
+              </setting>
+            </block>
 
-                            <setting string="Credentials">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <field name="postnl_sftp_username"/>
-                                    </div>
-                                    <div class="col-6">
-                                        <field name="postnl_sftp_password" password="True"/>
-                                    </div>
-                                </div>
-                            </setting>
+            <block title="Diagnostics &amp; Tests">
+              <setting string="Test PostNL Setup">
+                <button name="action_test_general_config" type="object" string="Test General Config" class="btn-secondary me-2"/>
+                <button name="action_test_sftp_connection" type="object" string="Test SFTP" class="btn-secondary me-2"/>
+                <button name="action_test_order_export" type="object" string="Test Order Export" class="btn-secondary me-2"/>
+                <button name="action_test_shipment_import" type="object" string="Test Shipment Import" class="btn-secondary me-2"/>
+              </setting>
+            </block>
 
-                            <setting string="Remote Paths">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <field name="postnl_sftp_path_orders"/>
-                                    </div>
-                                    <div class="col-12 mt-2">
-                                        <field name="postnl_sftp_path_shipments"/>
-                                    </div>
-                                </div>
-                            </setting>
-
-                            <setting string="Test Connection">
-                                <button name="action_test_sftp_connection"
-                                        type="object"
-                                        string="Test SFTP Connection"
-                                        class="btn-secondary"/>
-                            </setting>
-                        </block>
-
-                        <!-- ========== BLOCK: ORDER EXPORT ========== -->
-                        <block title="Order Export">
-                            <setting string="Behavior">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <field name="postnl_export_auto"/>
-                                    </div>
-                                    <div class="col-6">
-                                        <field name="postnl_export_trigger_state"/>
-                                    </div>
-                                    <div class="col-12 mt-2">
-                                        <field name="postnl_export_filename_pattern"/>
-                                    </div>
-                                </div>
-                            </setting>
-
-                            <setting string="Diagnostics">
-                                <button name="action_test_order_export"
-                                        type="object"
-                                        string="Test Order Export"
-                                        class="btn-secondary"/>
-                            </setting>
-                        </block>
-
-                        <!-- ========== BLOCK: SHIPMENT IMPORT ========== -->
-                        <block title="Shipment Import">
-                            <setting string="Behavior">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <field name="postnl_import_auto"/>
-                                    </div>
-                                    <div class="col-6">
-                                        <field name="postnl_import_auto_done"/>
-                                    </div>
-                                </div>
-                            </setting>
-
-                            <setting string="Diagnostics">
-                                <button name="action_test_shipment_import"
-                                        type="object"
-                                        string="Test Shipment Import"
-                                        class="btn-secondary"/>
-                            </setting>
-                        </block>
-
-                    </app>
-                </xpath>
-            </field>
-        </record>
-    </data>
+          </app>
+        </xpath>
+      </field>
+    </record>
+  </data>
 </odoo>
