@@ -3,7 +3,7 @@
     "name": "Odoo-PostNL-Integration",
     "summary": "Connect Odoo 18 with PostNL (orders export, shipments import, weight-based shipping codes).",
     "version": "18.0.1.0.0",
-    "author": "Ali Hassan7",
+    "author": "Ali Hassan8",
     "license": "LGPL-3",
     "category": "Inventory/Shipping",
     "depends": [
