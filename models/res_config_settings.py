@@ -8,6 +8,7 @@ class ResConfigSettings(models.TransientModel):
     postnl_sftp_port = fields.Integer(string="SFTP Port", default=22)
     postnl_sftp_user = fields.Char(string="SFTP Username")
     postnl_sftp_password = fields.Char(string="SFTP Password")
+    postnl_sftp_private_key = fields.Text(string="SFTP Private Key")
     postnl_remote_order_path = fields.Char(string="Remote Path (Orders)")
     postnl_remote_shipment_path = fields.Char(string="Remote Path (Shipments)")
     postnl_remote_stock_path = fields.Char(string="Remote Path (Stock File)")
@@ -29,6 +30,7 @@ class ResConfigSettings(models.TransientModel):
             postnl_sftp_port=int(IrConfig.get_param('postnl_sftp_port', default=22)),
             postnl_sftp_user=IrConfig.get_param('postnl_sftp_user', default=''),
             postnl_sftp_password=IrConfig.get_param('postnl_sftp_password', default=''),
+            postnl_sftp_private_key=IrConfig.get_param('postnl_sftp_private_key', default=''),
             postnl_remote_order_path=IrConfig.get_param('postnl_remote_order_path', default=''),
             postnl_remote_shipment_path=IrConfig.get_param('postnl_remote_shipment_path', default=''),
             postnl_remote_stock_path=IrConfig.get_param('postnl_remote_stock_path', default=''),
@@ -48,6 +50,7 @@ class ResConfigSettings(models.TransientModel):
         IrConfig.set_param('postnl_sftp_port', self.postnl_sftp_port or 22)
         IrConfig.set_param('postnl_sftp_user', self.postnl_sftp_user or '')
         IrConfig.set_param('postnl_sftp_password', self.postnl_sftp_password or '')
+        IrConfig.set_param('postnl_sftp_private_key', self.postnl_sftp_private_key or '')
         IrConfig.set_param('postnl_remote_order_path', self.postnl_remote_order_path or '')
         IrConfig.set_param('postnl_remote_shipment_path', self.postnl_remote_shipment_path or '')
         IrConfig.set_param('postnl_remote_stock_path', self.postnl_remote_stock_path or '')
@@ -74,16 +77,3 @@ class ResConfigSettings(models.TransientModel):
 
     def action_postnl_import_now(self):
         self.env['postnl.shipment.import'].cron_import_shipments()
-        
-        
-class ResConfigSettings(models.TransientModel):
-    _inherit = 'res.config.settings'
-
-
-    postnl_sftp_username = fields.Char(string="SFTP Username")
-    postnl_sftp_password = fields.Char(string="SFTP Password")
-    postnl_sftp_host = fields.Char(string="SFTP Host")
-    postnl_sftp_port = fields.Char(string="SFTP Port")
-    postnl_remote_order_path = fields.Char(string="Remote Order Path")
-    postnl_remote_shipment_path = fields.Char(string="Remote Shipment Path")
-    postnl_remote_stock_path = fields.Char(string="Remote Stock Path")
