@@ -77,3 +77,14 @@ class ResConfigSettings(models.TransientModel):
             postnl_import_auto_done=params.get_param("postnl_odoo_integration.import_auto_done", "False") == "True",
         )
         return res
+
+
+class PostnlWeightRule(models.Model):
+    _name = 'postnl.weight.rule'
+    _description = 'PostNL Weight Rule'
+
+    config_id = fields.Many2one('res.config.settings', string='Config')
+    shipping_code = fields.Char(string='Shipping Code', required=True)
+    min_weight = fields.Float(string='Min Weight', required=True)
+    max_weight = fields.Float(string='Max Weight', required=True)
+    country_ids = fields.Many2many('res.country', string='Countries')
