@@ -1,3 +1,3 @@
-# postnl_odoo_integration/__init__.py
+# -*- coding: utf-8 -*-
 from . import models
 from . import services
