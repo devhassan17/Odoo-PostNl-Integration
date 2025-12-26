@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Root App Menu -->
+    <menuitem
+        id="menu_postnl_root"
+        name="PostNL"
+        sequence="10"
+    />
+
+    <!-- Sub menus -->
+    <menuitem
+        id="menu_postnl_orders"
+        name="Orders"
+        parent="menu_postnl_root"
+        action="action_postnl_orders"
+    />
+
+    <menuitem
+        id="menu_postnl_config"
+        name="Configuration"
+        parent="menu_postnl_root"
+        action="action_postnl_config"
+    />
+
+</odoo>
