@@ -5,7 +5,8 @@
     <menuitem
         id="menu_postnl_root"
         name="PostNL"
-        sequence="10"
+        sequence="90"
+        groups="base.group_user"
     />
 
     <!-- Orders -->
@@ -13,7 +14,9 @@
         id="menu_postnl_orders"
         name="Orders"
         parent="menu_postnl_root"
-        action="action_postnl_order_log"
+        action="postnl_odoo_integration.action_postnl_order_log"
+        sequence="10"
+        groups="base.group_user"
     />
 
     <!-- Configuration -->
@@ -21,7 +24,9 @@
         id="menu_postnl_config"
         name="Configuration"
         parent="menu_postnl_root"
-        action="action_postnl_config"
+        action="postnl_odoo_integration.action_postnl_config"
+        sequence="20"
+        groups="base.group_system"
     />
 
 </odoo>

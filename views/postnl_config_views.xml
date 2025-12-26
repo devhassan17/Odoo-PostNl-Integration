@@ -1,60 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <!-- Create a singleton configuration record -->
-  <data noupdate="1">
-    <record id="postnl_config_singleton" model="postnl.config">
-      <field name="name">PostNL Configuration</field>
-    </record>
-  </data>
 
-  <data>
+    <!-- Create a singleton configuration record -->
+    <data noupdate="1">
+        <record id="postnl_config_singleton" model="postnl.config">
+            <field name="name">PostNL Configuration</field>
+        </record>
+    </data>
 
-    <record id="view_postnl_config_form" model="ir.ui.view">
-      <field name="name">postnl.config.form</field>
-      <field name="model">postnl.config</field>
-      <field name="arch" type="xml">
-        <form string="PostNL Configuration" create="0" delete="0">
-          <sheet>
-            <group>
-              <group string="Authentication">
-                <field name="api_url" placeholder="https://api-sandbox.postnl.nl/v2/fulfilment/order"/>
-                <field name="api_key" password="True"/>
-                <field name="customer_number"/>
-              </group>
-              <group string="Defaults">
-                <field name="merchant_code"/>
-                <field name="fulfilment_location"/>
-                <field name="channel"/>
-                <field name="default_product_code"/>
-              </group>
-            </group>
+    <data>
 
-            <notebook>
-              <page string="Weight Rules">
-                <field name="rule_ids" context="{'default_config_id': active_id}">
-                  <list editable="bottom" string="Weight Based Rules">
-                    <field name="product_code"/>
-                    <field name="max_weight_kg"/>
-                    <field name="country_ids" widget="many2many_tags" options="{'no_create': True}"/>
-                    <field name="active"/>
-                  </list>
-                </field>
-              </page>
-            </notebook>
-          </sheet>
-        </form>
-      </field>
-    </record>
+        <!-- FORM VIEW -->
+        <record id="view_postnl_config_form" model="ir.ui.view">
+            <field name="name">postnl.config.form</field>
+            <field name="model">postnl.config</field>
+            <field name="arch" type="xml">
+                <form string="PostNL Configuration" create="0" delete="0">
+                    <sheet>
+                        <group>
+                            <group string="Authentication">
+                                <field name="api_url" placeholder="https://api-sandbox.postnl.nl/v2/fulfilment/order"/>
+                                <field name="api_key" password="True"/>
+                                <field name="customer_number"/>
+                            </group>
+                            <group string="Defaults">
+                                <field name="merchant_code"/>
+                                <field name="fulfilment_location"/>
+                                <field name="channel"/>
+                                <field name="default_product_code"/>
+                            </group>
+                        </group>
 
-    <record id="action_postnl_config" model="ir.actions.act_window">
-      <field name="name">Configuration</field>
-      <field name="res_model">postnl.config</field>
-      <field name="view_mode">form</field>
-      <field name="res_id" ref="postnl_config_singleton"/>
-      <field name="views" eval="[(ref('view_postnl_config_form'),'form')]"/>
-    </record>
+                        <notebook>
+                            <page string="Weight Rules">
+                                <field name="rule_ids" context="{'default_config_id': id}">
+                                    <tree editable="bottom" string="Weight Based Rules">
+                                        <field name="product_code"/>
+                                        <field name="max_weight_kg"/>
+                                        <field name="country_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                        <field name="active"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
 
-    <menuitem id="menu_postnl_config" name="Configuration" parent="menu_postnl_root" action="action_postnl_config" sequence="20" groups="base.group_user"/>
+        <!-- ACTION (open the singleton config record directly) -->
+        <record id="action_postnl_config" model="ir.actions.act_window">
+            <field name="name">Configuration</field>
+            <field name="res_model">postnl.config</field>
+            <field name="view_mode">form</field>
+            <field name="res_id" ref="postnl_config_singleton"/>
+            <field name="views" eval="[(ref('view_postnl_config_form'), 'form')]"/>
+            <field name="target">current</field>
+        </record>
 
-  </data>
+    </data>
+
 </odoo>
