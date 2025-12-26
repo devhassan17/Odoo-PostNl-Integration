@@ -4,7 +4,7 @@
     'summary': 'Send confirmed sales orders to PostNL Fulfilment API',
     'version': '18.0.1.0.0',
     'category': 'Sales',
-    'author': 'Custom2',
+    'author': 'Custom3',
     'license': 'LGPL-3',
     'depends': ['sale_management'],
     'data': [],
