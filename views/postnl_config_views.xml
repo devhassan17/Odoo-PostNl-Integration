@@ -19,10 +19,12 @@
                     <sheet>
                         <group>
                             <group string="Authentication">
-                                <field name="api_url" placeholder="https://api-sandbox.postnl.nl/v2/fulfilment/order"/>
+                                <field name="api_url"
+                                       placeholder="https://api-sandbox.postnl.nl/v2/fulfilment/order"/>
                                 <field name="api_key" password="True"/>
                                 <field name="customer_number"/>
                             </group>
+
                             <group string="Defaults">
                                 <field name="merchant_code"/>
                                 <field name="fulfilment_location"/>
@@ -34,12 +36,15 @@
                         <notebook>
                             <page string="Weight Rules">
                                 <field name="rule_ids" context="{'default_config_id': id}">
-                                    <tree editable="bottom" string="Weight Based Rules">
+                                    <!-- Odoo 18: use LIST, not TREE -->
+                                    <list editable="bottom" string="Weight Based Rules">
                                         <field name="product_code"/>
                                         <field name="max_weight_kg"/>
-                                        <field name="country_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                        <field name="country_ids"
+                                               widget="many2many_tags"
+                                               options="{'no_create': True}"/>
                                         <field name="active"/>
-                                    </tree>
+                                    </list>
                                 </field>
                             </page>
                         </notebook>
@@ -48,7 +53,7 @@
             </field>
         </record>
 
-        <!-- ACTION (open the singleton config record directly) -->
+        <!-- ACTION (open singleton directly) -->
         <record id="action_postnl_config" model="ir.actions.act_window">
             <field name="name">Configuration</field>
             <field name="res_model">postnl.config</field>
