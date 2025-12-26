@@ -7,7 +7,11 @@
     'author': 'Custom',
     'license': 'LGPL-3',
     'depends': ['sale_management'],
-    'data': [],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/postnl_order_log_views.xml',
+        'views/postnl_config_views.xml',
+    ],
     'installable': True,
     'application': False,
     'auto_install': False,

@@ -17,7 +17,7 @@ API_KEY = "d9fc5fac-91d1-498b-80b2-d95efcbcc389"
 MERCHANT_CODE = "mc"
 FULFILMENT_LOCATION = "AstroHouten"
 CHANNEL = "NL"        # Packing slip language
-PRODUCT_CODE = "03085" # PostNL product code
+DEFAULT_PRODUCT_CODE = "03085" # PostNL product code fallback
 
 # HTTP timeout (seconds)
 TIMEOUT = 30

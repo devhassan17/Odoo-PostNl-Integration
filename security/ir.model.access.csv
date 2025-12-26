@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_postnl_order_log_user,postnl.order.log user,model_postnl_order_log,base.group_user,1,0,0,0
+access_postnl_shipping_rule_user,postnl.shipping.rule user,model_postnl_shipping_rule,base.group_user,1,1,1,1
+access_postnl_config_user,postnl.config user,model_postnl_config,base.group_user,1,1,1,1
