@@ -1,93 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <data>
 
+    <!-- TREE -->
     <record id="view_postnl_order_log_tree" model="ir.ui.view">
-      <field name="name">postnl.order.log.tree</field>
-      <field name="model">postnl.order.log</field>
-      <field name="arch" type="xml">
-        <list string="PostNL Sent Orders" create="0" delete="0" default_order="sent_at desc">
-          <field name="sent_at"/>
-          <field name="sale_order_id"/>
-          <field name="destination_country_id"/>
-          <field name="total_weight_kg"/>
-          <field name="product_code"/>
-          <field name="http_status"/>
-          <field name="success"/>
-          <field name="error_message"/>
-        </list>
-      </field>
+        <field name="name">postnl.order.log.tree</field>
+        <field name="model">postnl.order.log</field>
+        <field name="arch" type="xml">
+            <tree string="PostNL Sent Orders" create="0" delete="0" default_order="sent_at desc">
+                <field name="sent_at"/>
+                <field name="sale_order_id"/>
+                <field name="destination_country_id"/>
+                <field name="total_weight_kg"/>
+                <field name="product_code"/>
+                <field name="http_status"/>
+                <field name="success"/>
+                <field name="error_message"/>
+            </tree>
+        </field>
     </record>
 
+    <!-- FORM -->
     <record id="view_postnl_order_log_form" model="ir.ui.view">
-      <field name="name">postnl.order.log.form</field>
-      <field name="model">postnl.order.log</field>
-      <field name="arch" type="xml">
-        <form string="PostNL Order Log" create="0" delete="0">
-          <sheet>
-            <group>
-              <group>
-                <field name="sent_at" readonly="1"/>
-                <field name="sale_order_id" readonly="1"/>
-                <field name="order_name" readonly="1"/>
-              </group>
-              <group>
-                <field name="destination_country_id" readonly="1"/>
-                <field name="total_weight_kg" readonly="1"/>
-                <field name="product_code" readonly="1"/>
-              </group>
-            </group>
-            <group>
-              <group>
-                <field name="endpoint_url" readonly="1"/>
-                <field name="http_status" readonly="1"/>
-                <field name="success" readonly="1"/>
-              </group>
-              <group>
-                <field name="error_message" readonly="1"/>
-              </group>
-            </group>
-            <notebook>
-              <page string="Request">
-                <field name="request_payload" readonly="1" widget="text"/>
-              </page>
-              <page string="Response">
-                <field name="response_body" readonly="1" widget="text"/>
-              </page>
-            </notebook>
-          </sheet>
-        </form>
-      </field>
+        <field name="name">postnl.order.log.form</field>
+        <field name="model">postnl.order.log</field>
+        <field name="arch" type="xml">
+            <form string="PostNL Order Log" create="0" delete="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="sent_at" readonly="1"/>
+                            <field name="sale_order_id" readonly="1"/>
+                            <field name="order_name" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="destination_country_id" readonly="1"/>
+                            <field name="total_weight_kg" readonly="1"/>
+                            <field name="product_code" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group>
+                            <field name="endpoint_url" readonly="1"/>
+                            <field name="http_status" readonly="1"/>
+                            <field name="success" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="error_message" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Request">
+                            <field name="request_payload" readonly="1" widget="text"/>
+                        </page>
+                        <page string="Response">
+                            <field name="response_body" readonly="1" widget="text"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
     </record>
 
+    <!-- SEARCH -->
     <record id="view_postnl_order_log_search" model="ir.ui.view">
-      <field name="name">postnl.order.log.search</field>
-      <field name="model">postnl.order.log</field>
-      <field name="arch" type="xml">
-        <search string="Search PostNL Logs">
-          <field name="sale_order_id"/>
-          <field name="order_name"/>
-          <field name="http_status"/>
-          <filter string="Successful" name="success" domain="[('success','=',True)]"/>
-          <filter string="Failed" name="failed" domain="[('success','=',False)]"/>
-          <group expand="0" string="Group By">
-            <filter string="Sale Order" name="grp_so" context="{'group_by':'sale_order_id'}"/>
-            <filter string="Success" name="grp_success" context="{'group_by':'success'}"/>
-            <filter string="Country" name="grp_country" context="{'group_by':'destination_country_id'}"/>
-          </group>
-        </search>
-      </field>
+        <field name="name">postnl.order.log.search</field>
+        <field name="model">postnl.order.log</field>
+        <field name="arch" type="xml">
+            <search string="Search PostNL Logs">
+                <field name="sale_order_id"/>
+                <field name="order_name"/>
+                <field name="http_status"/>
+
+                <filter string="Successful" name="success" domain="[('success','=',True)]"/>
+                <filter string="Failed" name="failed" domain="[('success','=',False)]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Sale Order" name="grp_so" context="{'group_by':'sale_order_id'}"/>
+                    <filter string="Success" name="grp_success" context="{'group_by':'success'}"/>
+                    <filter string="Country" name="grp_country" context="{'group_by':'destination_country_id'}"/>
+                </group>
+            </search>
+        </field>
     </record>
 
+    <!-- ACTION -->
     <record id="action_postnl_order_log" model="ir.actions.act_window">
-      <field name="name">PostNL Orders</field>
-      <field name="res_model">postnl.order.log</field>
-      <field name="view_mode">list,form</field>
-      <field name="search_view_id" ref="view_postnl_order_log_search"/>
+        <field name="name">PostNL Orders</field>
+        <field name="res_model">postnl.order.log</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_postnl_order_log_search"/>
     </record>
 
-    <menuitem id="menu_postnl_root" name="PostNL" sequence="92" groups="base.group_user"/>
-    <menuitem id="menu_postnl_orders" name="Orders" parent="menu_postnl_root" action="action_postnl_order_log" sequence="10" groups="base.group_user"/>
-
-  </data>
 </odoo>

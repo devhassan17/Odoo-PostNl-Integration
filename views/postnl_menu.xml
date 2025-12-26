@@ -8,14 +8,15 @@
         sequence="10"
     />
 
-    <!-- Sub menus -->
+    <!-- Orders -->
     <menuitem
         id="menu_postnl_orders"
         name="Orders"
         parent="menu_postnl_root"
-        action="action_postnl_orders"
+        action="action_postnl_order_log"
     />
 
+    <!-- Configuration -->
     <menuitem
         id="menu_postnl_config"
         name="Configuration"
