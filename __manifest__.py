@@ -4,10 +4,11 @@
     'summary': 'Send confirmed sales orders to PostNL Fulfilment API',
     'version': '18.0.1.0.0',
     'category': 'Sales',
-    'author': 'Custom4',
-    'license': 'LGPL-3',
+    'images': ['static/description/icon.png'],
+    'author': 'Ali Hassan',
     'depends': ['sale_management'],
     "data": [
+    "security/ir.model.access.csv",
     "views/postnl_menu.xml",
     "views/postnl_order_views.xml",
     "views/postnl_config_views.xml",
