@@ -10,7 +10,7 @@ class StockPicking(models.Model):
 
     def button_validate(self):
         """
-        Automatically send inbound to PostNL when Incoming Shipment is validated
+        Auto-send inbound replenishment to PostNL on validation
         """
         res = super().button_validate()
 
@@ -20,18 +20,15 @@ class StockPicking(models.Model):
                 and picking.state == "done"
             ):
                 try:
-                    service = (
-                        self.env["postnl.base.service"]
-                        .get_replenishment_service()
+                    self.env["postnl.replenishment.service"].send_replenishment(
+                        picking
                     )
-                    service.send_replenishment(picking)
                 except Exception as e:
                     _logger.error(
                         "PostNL inbound failed for %s: %s",
                         picking.name,
                         str(e)
                     )
-                    # ❗ Do NOT block stock validation
-                    # Stock is more important than API sync
+                    # Do NOT block stock validation
 
         return res

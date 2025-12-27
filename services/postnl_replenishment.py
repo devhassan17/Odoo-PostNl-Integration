@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
 import logging
 import requests
-from odoo import _
-from .postnl_base import PostNLBaseService
+from odoo import models, _
 
 _logger = logging.getLogger(__name__)
 
 
-class PostNLReplenishmentService(PostNLBaseService):
+class PostNLReplenishmentService(models.AbstractModel):
+    _name = "postnl.replenishment.service"
+    _description = "PostNL Replenishment Service"
 
     POSTNL_REPLENISHMENT_URL = (
         "https://api-sandbox.postnl.nl/v2/fulfilment/replenishment"
     )
 
     def send_replenishment(self, picking):
-        config = self.get_config()
+        config = self.env["postnl.base.service"].get_config()
 
         payload = {
             "orderNumber": picking.name[:10],
@@ -42,7 +43,7 @@ class PostNLReplenishmentService(PostNLBaseService):
             "customerNumber": config.customer_number,
         }
 
-        _logger.info("PostNL Inbound (Replenishment) Payload: %s", payload)
+        _logger.info("PostNL Inbound Payload: %s", payload)
 
         response = requests.post(
             self.POSTNL_REPLENISHMENT_URL,
@@ -59,7 +60,8 @@ class PostNLReplenishmentService(PostNLBaseService):
             )
 
         _logger.info(
-            "PostNL inbound successfully sent for picking %s", picking.name
+            "PostNL inbound sent successfully for picking %s",
+            picking.name
         )
 
         return True
