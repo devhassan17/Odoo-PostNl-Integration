@@ -5,12 +5,12 @@ import re
 from datetime import datetime
 
 import requests
-from odoo import fields
 
 _logger = logging.getLogger(__name__)
 
 
 def _split_street(street: str, street2: str = ""):
+    """Best-effort split of Odoo street into (street, houseNumber, addition)."""
     full = " ".join([s for s in [street, street2] if s])
     full = re.sub(r"\s+", " ", full).strip()
     m = re.match(r"^(.*?)(?:\s+(\d+))(?:\s*([A-Za-z0-9\-\/]+))?$", full)
@@ -20,9 +20,10 @@ def _split_street(street: str, street2: str = ""):
 
 
 def _split_name(name: str):
-    parts = (name or "").strip().split()
-    if not parts:
+    name = (name or "").strip()
+    if not name:
         return "", ""
+    parts = name.split()
     return parts[0], " ".join(parts[1:]) if len(parts) > 1 else ""
 
 
@@ -42,9 +43,9 @@ class PostNLClient:
         self.env = env
         self.icp = env['ir.config_parameter'].sudo()
 
-    # -------------------------
-    # CONFIG HELPERS (UI ONLY)
-    # -------------------------
+    # ------------------------------------------------
+    # CONFIG HELPERS (FROM UI ONLY)
+    # ------------------------------------------------
 
     def _get_param(self, key, default=""):
         return self.icp.get_param(key, default)
@@ -52,8 +53,8 @@ class PostNLClient:
     def _headers(self):
         return {
             "Content-Type": "application/json",
-            "apikey": self._get_param('postnl.api_key'),
             "customerNumber": self._get_param('postnl.customer_number'),
+            "apikey": self._get_param('postnl.api_key'),
         }
 
     def _validate_config(self):
@@ -64,13 +65,12 @@ class PostNLClient:
             missing.append("API Key")
         if not self._get_param('postnl.customer_number'):
             missing.append("Customer Number")
-
         if missing:
             raise ValueError(f"PostNL configuration missing: {', '.join(missing)}")
 
-    # -------------------------
-    # BUSINESS LOGIC
-    # -------------------------
+    # ------------------------------------------------
+    # PRODUCT CODE (WEIGHT RULES)
+    # ------------------------------------------------
 
     def _get_product_code(self, order, total_weight_kg):
         country = order.partner_shipping_id.country_id or order.partner_id.country_id
@@ -85,28 +85,28 @@ class PostNLClient:
 
         return rule.product_code if rule else self._get_param('postnl.default_product_code')
 
-    # -------------------------
+    # ------------------------------------------------
     # MAIN API CALL
-    # -------------------------
+    # ------------------------------------------------
 
     def send_sale_order(self, order):
         self._validate_config()
         order.ensure_one()
 
-        ship = order.partner_shipping_id or order.partner_id
-        inv = order.partner_invoice_id or order.partner_id
+        ship_partner = order.partner_shipping_id or order.partner_id
+        inv_partner = order.partner_invoice_id or order.partner_id
 
         order_number = _sanitize_ordernumber(order.name, order.id)
         order_dt = (order.date_order or datetime.utcnow()).strftime("%Y-%m-%dT%H:%M:%S")
 
-        ship_street, ship_hn, ship_add = _split_street(ship.street, ship.street2)
-        inv_street, inv_hn, inv_add = _split_street(inv.street, inv.street2)
+        ship_street, ship_hn, ship_add = _split_street(ship_partner.street, ship_partner.street2)
+        inv_street, inv_hn, inv_add = _split_street(inv_partner.street, inv_partner.street2)
 
-        ship_fn, ship_ln = _split_name(ship.name)
-        inv_fn, inv_ln = _split_name(inv.name)
+        ship_fn, ship_ln = _split_name(ship_partner.name)
+        inv_fn, inv_ln = _split_name(inv_partner.name)
 
         lines = []
-        total_weight = 0.0
+        total_weight_kg = 0.0
 
         for l in order.order_line:
             p = l.product_id
@@ -114,13 +114,14 @@ class PostNLClient:
                 continue
 
             qty = int(l.product_uom_qty or 0)
-            total_weight += (p.weight or 0.0) * qty
+            total_weight_kg += (p.weight or 0.0) * qty
 
             sku = (p.default_code or p.display_name or "").replace(" ", "").upper()
             if sku:
                 lines.append({"SKU": sku, "quantity": qty})
 
         if not lines:
+            _logger.info("[PostNL] Skip order %s (no shippable lines)", order.name)
             return True
 
         payload = {
@@ -129,7 +130,7 @@ class PostNLClient:
             "merchantCode": self._get_param('postnl.merchant_code'),
             "fulfilmentLocation": self._get_param('postnl.fulfilment_location'),
             "channel": self._get_param('postnl.channel'),
-            "productCode": self._get_product_code(order, total_weight),
+            "productCode": self._get_product_code(order, total_weight_kg),
             "orderDateTime": order_dt,
             "orderLines": lines,
             "shipToAddress": {
@@ -138,10 +139,11 @@ class PostNLClient:
                 "street": ship_street,
                 "houseNumber": ship_hn,
                 "houseNumberAddition": ship_add,
-                "postalCode": (ship.zip or "").replace(" ", ""),
-                "city": ship.city or "",
-                "countryCode": ship.country_id.code or "",
-                "email": ship.email or "",
+                "postalCode": (ship_partner.zip or "").replace(" ", ""),
+                "city": ship_partner.city or "",
+                "countryCode": ship_partner.country_id.code or "",
+                "phoneNumber": ship_partner.phone or ship_partner.mobile or "",
+                "email": ship_partner.email or "",
             },
             "invoiceAddress": {
                 "firstName": inv_fn,
@@ -149,37 +151,53 @@ class PostNLClient:
                 "street": inv_street,
                 "houseNumber": inv_hn,
                 "houseNumberAddition": inv_add,
-                "postalCode": (inv.zip or "").replace(" ", ""),
-                "city": inv.city or "",
-                "countryCode": inv.country_id.code or "",
-                "email": inv.email or "",
+                "postalCode": (inv_partner.zip or "").replace(" ", ""),
+                "city": inv_partner.city or "",
+                "countryCode": inv_partner.country_id.code or "",
+                "phoneNumber": inv_partner.phone or inv_partner.mobile or "",
+                "email": inv_partner.email or "",
             },
         }
 
         url = self._get_param('postnl.api_url')
         timeout = int(self._get_param('postnl.timeout', '30'))
 
-        log = self.env['postnl.order.log'].sudo().create({
+        log_rec = self.env['postnl.order.log'].sudo().create({
             'sale_order_id': order.id,
             'order_name': order.name,
-            'destination_country_id': ship.country_id.id,
-            'total_weight_kg': total_weight,
+            'destination_country_id': ship_partner.country_id.id,
+            'total_weight_kg': total_weight_kg,
             'product_code': payload['productCode'],
             'endpoint_url': url,
-            'request_payload': json.dumps(payload),
+            'request_payload': json.dumps(payload, ensure_ascii=False),
         })
 
         try:
             resp = requests.post(url, headers=self._headers(), json=payload, timeout=timeout)
-            body = resp.json() if resp.headers.get("Content-Type", "").startswith("application/json") else resp.text
+            try:
+                body = resp.json()
+            except Exception:
+                body = resp.text
 
-            log.write({
+            log_rec.write({
                 'http_status': resp.status_code,
                 'success': 200 <= resp.status_code < 300,
-                'response_body': json.dumps(body)[:5000],
+                'response_body': json.dumps(body, ensure_ascii=False)[:5000],
+                'error_message': False if 200 <= resp.status_code < 300 else str(body)[:255],
             })
-            return 200 <= resp.status_code < 300
+
+            if 200 <= resp.status_code < 300:
+                _logger.info("[PostNL] Sent order %s successfully (HTTP %s)", order.name, resp.status_code)
+                return True
+
+            _logger.error("[PostNL] Failed to send order %s (HTTP %s)", order.name, resp.status_code)
+            return False
 
         except Exception as e:
-            log.write({'success': False, 'error_message': str(e)})
-            raise
+            _logger.exception("[PostNL] Exception sending order %s", order.name)
+            log_rec.write({
+                'success': False,
+                'http_status': 0,
+                'error_message': str(e)[:255],
+            })
+            return False
