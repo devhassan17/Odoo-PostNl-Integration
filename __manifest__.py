@@ -5,7 +5,7 @@
     'version': '18.0.1.0.0',
     'category': 'Sales',
     'images': ['static/description/icon.png'],
-    'author': 'Ali Hassan10',
+    'author': 'Ali Hassan11',
     'depends': ['sale_management'],
     'data': [
     'security/ir.model.access.csv',

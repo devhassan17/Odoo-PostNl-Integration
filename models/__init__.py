@@ -6,5 +6,4 @@ from . import postnl_config
 from . import res_config_settings
 from . import stock_picking
 from . import postnl_replenishment
-from .stock_picking import StockPicking
-from .postnl_replenishment import PostNLReplenishment
+from . import purchase_order
