@@ -7,3 +7,5 @@ from . import res_config_settings
 from . import stock_picking
 from . import postnl_replenishment
 from . import purchase_order
+from . import sale_order_postnl_fulfilment
+
