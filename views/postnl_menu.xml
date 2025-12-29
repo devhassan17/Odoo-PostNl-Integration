@@ -19,6 +19,16 @@
         groups="base.group_user"
     />
 
+    <!-- Replenishments -->
+    <menuitem
+        id="menu_postnl_replenishments"
+        name="Replenishments"
+        parent="menu_postnl_root"
+        action="postnl_odoo_integration.action_postnl_replenishment"
+        sequence="15"
+        groups="base.group_user"
+    />
+
     <!-- Configuration -->
     <menuitem
         id="menu_postnl_config"
