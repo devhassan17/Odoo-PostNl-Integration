@@ -9,8 +9,6 @@ class PostNLBaseService(models.AbstractModel):
     _name = "postnl.base.service"
     _description = "PostNL Base Service"
 
-    # ❌ NO __init__ HERE
-
     def get_config(self):
         """
         Fetch PostNL configuration (singleton)
@@ -21,4 +19,7 @@ class PostNLBaseService(models.AbstractModel):
         return config
 
     def get_replenishment_service(self):
+        """
+        Return replenishment service
+        """
         return self.env["postnl.replenishment.service"]
