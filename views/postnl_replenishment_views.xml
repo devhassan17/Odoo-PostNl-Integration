@@ -90,11 +90,5 @@
                ]"/>
     </record>
 
-    <!-- MENU -->
-    <menuitem id="menu_postnl_root" name="PostNL"/>
-    <menuitem id="menu_postnl_replenishment"
-              name="Replenishments"
-              parent="menu_postnl_root"
-              action="action_postnl_replenishment"/>
 
 </odoo>
