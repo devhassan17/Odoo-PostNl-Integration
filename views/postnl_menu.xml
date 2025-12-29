@@ -39,4 +39,10 @@
         groups="base.group_system"
     />
 
+    <menuitem
+    id="menu_postnl_root"
+    name="PostNL"
+    web_icon="postnl_odoo_integration,static/description/icon.png"
+/>
+
 </odoo>
