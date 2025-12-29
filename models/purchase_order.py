@@ -16,7 +16,17 @@ class PurchaseOrder(models.Model):
             _logger.warning("[PostNL Repl] Config missing, skipping replenishment creation.")
             return res
 
+        allowed_companies = config.allowed_company_ids
+
         for po in self:
+            # ✅ company filter (SAFE DEFAULT: if allowed list empty -> skip)
+            if not allowed_companies or po.company_id not in allowed_companies:
+                _logger.info(
+                    "[PostNL Repl] Skipping PO %s (company=%s) not in allowed companies",
+                    po.name, po.company_id.name
+                )
+                continue
+
             # Prevent duplicates
             exists = self.env["postnl.replenishment"].search(
                 [("purchase_order_id", "=", po.id)],

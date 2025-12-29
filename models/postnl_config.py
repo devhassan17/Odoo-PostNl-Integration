@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 from odoo import api, fields, models
 
 
@@ -22,11 +23,19 @@ class PostNLConfig(models.Model):
     channel = fields.Char(string="Channel", compute="_compute_params", inverse="_inverse_channel")
     default_product_code = fields.Char(string="Default Product Code", compute="_compute_params", inverse="_inverse_default_product_code")
 
-    # ✅ NEW FIELD (as you requested)
+    # ✅ Inbound URL
     postnl_inbound_url = fields.Char(
         string="PostNL Inbound URL",
         compute="_compute_params",
         inverse="_inverse_postnl_inbound_url",
+    )
+
+    # ✅ NEW: Allowed companies for PostNL sending
+    allowed_company_ids = fields.Many2many(
+        "res.company",
+        string="Allowed Companies (Send to PostNL)",
+        compute="_compute_params",
+        inverse="_inverse_allowed_company_ids",
     )
 
     rule_ids = fields.One2many("postnl.shipping.rule", "config_id", string="Weight Rules")
@@ -49,11 +58,20 @@ class PostNLConfig(models.Model):
             rec.channel = icp.get_param("postnl.channel", "")
             rec.default_product_code = icp.get_param("postnl.default_product_code", "")
 
-            # ✅ default to sandbox replenishment URL if empty
             rec.postnl_inbound_url = icp.get_param(
                 "postnl.inbound_url",
                 "https://api-sandbox.postnl.nl/v2/fulfilment/replenishment",
             )
+
+            # ✅ allowed companies stored as JSON list in ir.config_parameter
+            raw = icp.get_param("postnl.allowed_company_ids", "[]") or "[]"
+            try:
+                ids = json.loads(raw)
+                if not isinstance(ids, list):
+                    ids = []
+            except Exception:
+                ids = []
+            rec.allowed_company_ids = [(6, 0, ids)]
 
     def _set_param(self, key, value):
         self.env["ir.config_parameter"].sudo().set_param(key, value or "")
@@ -86,7 +104,12 @@ class PostNLConfig(models.Model):
         for rec in self:
             rec._set_param("postnl.default_product_code", rec.default_product_code)
 
-    # ✅ NEW inverse
     def _inverse_postnl_inbound_url(self):
         for rec in self:
             rec._set_param("postnl.inbound_url", rec.postnl_inbound_url)
+
+    # ✅ NEW inverse: save allowed companies
+    def _inverse_allowed_company_ids(self):
+        icp = self.env["ir.config_parameter"].sudo()
+        for rec in self:
+            icp.set_param("postnl.allowed_company_ids", json.dumps(rec.allowed_company_ids.ids))
