@@ -18,13 +18,14 @@
                 <form string="PostNL Configuration" create="0" delete="0">
                     <sheet>
                         <group>
-                            <group string="Authentication">
-                                <field name="api_url"
-                                       placeholder="https://api-sandbox.postnl.nl/v2/fulfilment/order"/>
-                                <field name="api_key" password="True"/>
-                                <field name="customer_number"/>
-                            </group>
-
+                           <group string="Authentication">
+                  <field name="api_url"
+                        placeholder="https://api-sandbox.postnl.nl/v2/fulfilment/order"/>
+                  <field name="postnl_inbound_url"
+                        placeholder="https://api-sandbox.postnl.nl/v2/fulfilment/replenishment"/>
+                  <field name="api_key" password="True"/>
+                  <field name="customer_number"/>
+                        </group>
                             <group string="Defaults">
                                 <field name="merchant_code"/>
                                 <field name="fulfilment_location"/>

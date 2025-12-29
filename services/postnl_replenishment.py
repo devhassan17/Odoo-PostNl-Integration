@@ -10,8 +10,6 @@ class PostNLReplenishmentService(models.AbstractModel):
     _name = "postnl.replenishment.service"
     _description = "PostNL Replenishment Service"
 
-    POSTNL_REPLENISHMENT_URL = "https://api-sandbox.postnl.nl/v2/fulfilment/replenishment"
-
     def send_replenishment(self, replenishment):
         """
         replenishment: postnl.replenishment record
@@ -19,13 +17,16 @@ class PostNLReplenishmentService(models.AbstractModel):
         """
         config = self.env["postnl.base.service"].get_config()
 
+        # ✅ Get inbound URL from configuration (fallback safe)
+        inbound_url = config.postnl_inbound_url or "https://api-sandbox.postnl.nl/v2/fulfilment/replenishment"
+
         po = replenishment.purchase_order_id
         picking = replenishment.picking_id
 
         # Dates
         if po:
             order_date = (po.date_order.date() if po.date_order else fields.Date.today()).isoformat()
-            planned_date = (po.date_planned.date() if po.date_planned else fields.Date.today()).isoformat()
+            planned_date = (po.date_planned.date() if getattr(po, "date_planned", False) else fields.Date.today()).isoformat()
         elif picking:
             order_date = (picking.scheduled_date.date() if picking.scheduled_date else fields.Date.today()).isoformat()
             planned_date = (picking.scheduled_date.date() if picking.scheduled_date else fields.Date.today()).isoformat()
@@ -80,10 +81,10 @@ class PostNLReplenishmentService(models.AbstractModel):
             "customerNumber": config.customer_number,
         }
 
-        _logger.info("[PostNL Repl] → POST %s | %s", self.POSTNL_REPLENISHMENT_URL, payload)
+        _logger.info("[PostNL Repl] → POST %s | %s", inbound_url, payload)
 
         response = requests.post(
-            self.POSTNL_REPLENISHMENT_URL,
+            inbound_url,
             json=payload,
             headers=headers,
             timeout=30
