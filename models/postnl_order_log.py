@@ -24,3 +24,61 @@ class PostNLOrderLog(models.Model):
     request_payload = fields.Text(string='Request Payload')
     response_body = fields.Text(string='Response Body')
     sent_at = fields.Datetime(string='Sent At', default=fields.Datetime.now, index=True)
+
+    # -------------------------------------------------------------------------
+    # Fulfilment / Shipment details (Related from Sale Order)
+    # -------------------------------------------------------------------------
+    so_postnl_fulfilment_status = fields.Selection(
+        related='sale_order_id.postnl_fulfilment_status',
+        string='Fulfilment Status',
+        store=False,
+        readonly=True,
+    )
+    so_postnl_fulfilment_order_no = fields.Char(
+        related='sale_order_id.postnl_fulfilment_order_no',
+        string='Fulfilment Order No',
+        store=False,
+        readonly=True,
+    )
+    so_postnl_message_no = fields.Char(
+        related='sale_order_id.postnl_message_no',
+        string='Shipment Message No',
+        store=False,
+        readonly=True,
+    )
+    so_postnl_ship_date = fields.Date(
+        related='sale_order_id.postnl_ship_date',
+        string='Ship Date',
+        store=False,
+        readonly=True,
+    )
+    so_postnl_ship_time = fields.Char(
+        related='sale_order_id.postnl_ship_time',
+        string='Ship Time',
+        store=False,
+        readonly=True,
+    )
+    so_postnl_track_trace_code = fields.Char(
+        related='sale_order_id.postnl_track_trace_code',
+        string='Barcode / Track&Trace',
+        store=False,
+        readonly=True,
+    )
+    so_postnl_track_trace_url = fields.Char(
+        related='sale_order_id.postnl_track_trace_url',
+        string='Track&Trace URL',
+        store=False,
+        readonly=True,
+    )
+    so_postnl_last_webhook_at = fields.Datetime(
+        related='sale_order_id.postnl_last_webhook_at',
+        string='Last Webhook At',
+        store=False,
+        readonly=True,
+    )
+    so_postnl_last_payload = fields.Text(
+        related='sale_order_id.postnl_last_payload',
+        string='Last Shipment Payload',
+        store=False,
+        readonly=True,
+    )

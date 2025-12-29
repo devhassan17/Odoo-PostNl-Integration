@@ -5,7 +5,7 @@
     'version': '18.0.1.0.0',
     'category': 'Sales',
     'images': ['static/description/icon.png'],
-    'author': 'Ali Hassan14',
+    'author': 'Ali Hassan15',
     'depends': ['sale_management'],
     'data': [
     'security/ir.model.access.csv',
@@ -21,6 +21,7 @@
     'installable': True,
     'application': True,
     'auto_install': False,
+    "license": "LGPL-3",
     'external_dependencies': {
         'python': ['requests'],
     },
