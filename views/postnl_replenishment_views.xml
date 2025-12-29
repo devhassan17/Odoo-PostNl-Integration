@@ -15,7 +15,7 @@
         </field>
     </record>
 
-    <!-- FORM VIEW (NO states / attrs / buttons) -->
+    <!-- FORM VIEW -->
     <record id="view_postnl_replenishment_form" model="ir.ui.view">
         <field name="name">postnl.replenishment.form</field>
         <field name="model">postnl.replenishment</field>
@@ -47,7 +47,7 @@
         </field>
     </record>
 
-    <!-- SEARCH VIEW -->
+    <!-- SEARCH VIEW (FIXED) -->
     <record id="view_postnl_replenishment_search" model="ir.ui.view">
         <field name="name">postnl.replenishment.search</field>
         <field name="model">postnl.replenishment</field>
@@ -55,13 +55,23 @@
             <search string="Search Replenishments">
                 <field name="name"/>
                 <field name="picking_id"/>
+                <field name="state"/>
 
-                <filter string="Sent" domain="[('state','=','sent')]"/>
-                <filter string="Failed" domain="[('state','=','error')]"/>
+                <filter name="sent"
+                        string="Sent"
+                        domain="[('state','=','sent')]"/>
+
+                <filter name="failed"
+                        string="Failed"
+                        domain="[('state','=','error')]"/>
 
                 <group expand="0" string="Group By">
-                    <filter string="State" context="{'group_by':'state'}"/>
-                    <filter string="Picking" context="{'group_by':'picking_id'}"/>
+                    <filter name="grp_state"
+                            string="State"
+                            context="{'group_by':'state'}"/>
+                    <filter name="grp_picking"
+                            string="Picking"
+                            context="{'group_by':'picking_id'}"/>
                 </group>
             </search>
         </field>
