@@ -4,3 +4,6 @@ access_postnl_shipping_rule_user,postnl.shipping.rule user,model_postnl_shipping
 access_postnl_config_user,postnl.config user,model_postnl_config,base.group_user,1,1,1,1
 access_postnl_replenishment_user,postnl.replenishment user,model_postnl_replenishment,base.group_user,1,0,0,0
 access_postnl_replenishment_admin,postnl.replenishment admin,model_postnl_replenishment,base.group_system,1,1,1,1
+
+access_postnl_fulfilment_cron,access_postnl_fulfilment_cron,model_postnl_fulfilment_cron,base.group_user,1,0,0,0
+access_postnl_fulfilment_shipment_queue,access_postnl_fulfilment_shipment_queue,model_postnl_fulfilment_shipment_queue,base.group_user,1,0,0,0
