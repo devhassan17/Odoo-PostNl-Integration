@@ -8,4 +8,5 @@ from . import stock_picking
 from . import postnl_replenishment
 from . import purchase_order
 from . import sale_order_postnl_fulfilment
-
+from . import postnl_fulfilment_cron
+from . import postnl_fulfilment_queue
