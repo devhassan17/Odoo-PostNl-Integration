@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
+import math
 import re
 from datetime import datetime
 
 import requests
+
+from ..utils.sku import resolve_sku
+from ..utils.pack import explode_sale_order_line
 
 _logger = logging.getLogger(__name__)
 
@@ -35,6 +39,18 @@ def _sanitize_ordernumber(order_name: str, order_id: int):
     if raw.isalpha():
         raw = f"{raw[:8]}{order_id % 100:02d}"
     return raw[-10:]
+
+
+def _ceil_qty(qty: float) -> int:
+    """If qty is fractional, round UP to avoid under-shipping."""
+    if qty is None:
+        return 0
+    try:
+        if float(qty).is_integer():
+            return int(qty)
+        return int(math.ceil(float(qty)))
+    except Exception:
+        return int(qty or 0)
 
 
 class PostNLClient:
@@ -105,7 +121,8 @@ class PostNLClient:
         ship_fn, ship_ln = _split_name(ship_partner.name)
         inv_fn, inv_ln = _split_name(inv_partner.name)
 
-        lines = []
+        # Build order lines with pack expansion + Monta-like SKU resolver
+        sku_qty_map = {}
         total_weight_kg = 0.0
 
         for l in order.order_line:
@@ -113,12 +130,26 @@ class PostNLClient:
             if not p or p.type == 'service':
                 continue
 
-            qty = int(l.product_uom_qty or 0)
-            total_weight_kg += (p.weight or 0.0) * qty
+            # explode packs/kits -> leaf components
+            exploded = explode_sale_order_line(self.env, l)
 
-            sku = (p.default_code or p.display_name or "").replace(" ", "").upper()
-            if sku:
-                lines.append({"SKU": sku, "quantity": qty})
+            for leaf_product, leaf_qty_float in exploded:
+                if not leaf_product or leaf_product.type == 'service':
+                    continue
+
+                qty_int = _ceil_qty(leaf_qty_float)
+                if qty_int <= 0:
+                    continue
+
+                total_weight_kg += (leaf_product.weight or 0.0) * qty_int
+
+                sku = resolve_sku(leaf_product)
+                if not sku:
+                    continue
+
+                sku_qty_map[sku] = sku_qty_map.get(sku, 0) + qty_int
+
+        lines = [{"SKU": sku, "quantity": qty} for sku, qty in sku_qty_map.items()]
 
         if not lines:
             _logger.info("[PostNL] Skip order %s (no shippable lines)", order.name)
