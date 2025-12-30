@@ -30,7 +30,19 @@ class PostNLConfig(models.Model):
         inverse="_inverse_postnl_inbound_url",
     )
 
-    # ✅ NEW: Allowed companies for PostNL sending
+    # ✅ URL Guard: Allowed instance base URLs (comma-separated)
+    allowed_base_urls = fields.Char(
+        string="Allowed Instance Base URLs",
+        compute="_compute_params",
+        inverse="_inverse_allowed_base_urls",
+        help=(
+            "Comma-separated list of allowed Odoo instance base URLs. "
+            "If set, PostNL sending will be blocked unless system web.base.url matches one of these URLs. "
+            "Example: https://yourdb.odoo.com/, https://staging-yourdb.odoo.com/"
+        ),
+    )
+
+    # ✅ Allowed companies (your existing feature)
     allowed_company_ids = fields.Many2many(
         "res.company",
         string="Allowed Companies (Send to PostNL)",
@@ -62,6 +74,9 @@ class PostNLConfig(models.Model):
                 "postnl.inbound_url",
                 "https://api-sandbox.postnl.nl/v2/fulfilment/replenishment",
             )
+
+            # ✅ URL Guard param
+            rec.allowed_base_urls = icp.get_param("postnl.allowed_base_urls", "")
 
             # ✅ allowed companies stored as JSON list in ir.config_parameter
             raw = icp.get_param("postnl.allowed_company_ids", "[]") or "[]"
@@ -107,6 +122,10 @@ class PostNLConfig(models.Model):
     def _inverse_postnl_inbound_url(self):
         for rec in self:
             rec._set_param("postnl.inbound_url", rec.postnl_inbound_url)
+
+    def _inverse_allowed_base_urls(self):
+        for rec in self:
+            rec._set_param("postnl.allowed_base_urls", rec.allowed_base_urls)
 
     # ✅ NEW inverse: save allowed companies
     def _inverse_allowed_company_ids(self):

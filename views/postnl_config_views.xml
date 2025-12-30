@@ -28,12 +28,17 @@
                             </group>
 
                             <group string="Defaults">
+
+                                <!-- ✅ URL Guard Field -->
+                                <field name="allowed_base_urls"
+                                       placeholder="https://live.odoo.com/, https://staging.odoo.com/"/>
+
                                 <field name="merchant_code"/>
                                 <field name="fulfilment_location"/>
                                 <field name="channel"/>
                                 <field name="default_product_code"/>
 
-                                <!-- ✅ NEW: choose allowed companies -->
+                                <!-- ✅ choose allowed companies -->
                                 <field name="allowed_company_ids"
                                        widget="many2many_tags"
                                        options="{'no_create': True}"/>

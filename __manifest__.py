@@ -5,7 +5,7 @@
     'version': '18.0.1.0.0',
     'category': 'Sales',
     'images': ['static/description/icon.png'],
-    'author': 'Ali Hassan16',
+    'author': 'Ali Hassan17',
     'license': 'LGPL-3',
 
     'depends': [

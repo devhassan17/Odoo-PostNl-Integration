@@ -10,12 +10,37 @@ class PostNLReplenishmentService(models.AbstractModel):
     _name = "postnl.replenishment.service"
     _description = "PostNL Replenishment Service"
 
+    def _is_instance_allowed(self):
+        icp = self.env["ir.config_parameter"].sudo()
+        web_url = (icp.get_param("web.base.url") or "").strip().rstrip("/") + "/"
+        allowed = (icp.get_param("postnl.allowed_base_urls") or "").strip()
+
+        if not allowed:
+            return True
+
+        allowed_urls = [
+            u.strip().rstrip("/") + "/"
+            for u in allowed.split(",")
+            if u.strip()
+        ]
+
+        ok = web_url.lower() in [u.lower() for u in allowed_urls]
+        if not ok:
+            _logger.warning("[PostNL Repl Guard] BLOCKED. web.base.url=%s allowed=%s", web_url, allowed_urls)
+        return ok
+
     def send_replenishment(self, replenishment):
         """
         replenishment: postnl.replenishment record
         Supports sending from purchase order OR incoming picking.
         """
         config = self.env["postnl.base.service"].get_config()
+
+        # ✅ URL GUARD
+        if not self._is_instance_allowed():
+            replenishment.state = "error"
+            replenishment.response_message = "Blocked by instance URL guard (web.base.url not allowed)"
+            return False
 
         # ✅ Get inbound URL from configuration (fallback safe)
         inbound_url = config.postnl_inbound_url or "https://api-sandbox.postnl.nl/v2/fulfilment/replenishment"

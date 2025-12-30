@@ -85,6 +85,32 @@ class PostNLClient:
             raise ValueError(f"PostNL configuration missing: {', '.join(missing)}")
 
     # ------------------------------------------------
+    # URL GUARD (INSTANCE CHECK)
+    # ------------------------------------------------
+    def _is_instance_allowed(self):
+        """
+        If postnl.allowed_base_urls is empty => allow.
+        Otherwise web.base.url must match one of the allowed URLs (comma-separated).
+        """
+        web_url = (self.icp.get_param("web.base.url") or "").strip()
+        web_url = web_url.rstrip("/") + "/"
+
+        allowed = (self.icp.get_param("postnl.allowed_base_urls") or "").strip()
+        if not allowed:
+            return True
+
+        allowed_urls = [
+            u.strip().rstrip("/") + "/"
+            for u in allowed.split(",")
+            if u.strip()
+        ]
+
+        is_ok = web_url.lower() in [u.lower() for u in allowed_urls]
+        if not is_ok:
+            _logger.warning("[PostNL Guard] BLOCKED. web.base.url=%s allowed=%s", web_url, allowed_urls)
+        return is_ok
+
+    # ------------------------------------------------
     # PRODUCT CODE (WEIGHT RULES)
     # ------------------------------------------------
 
@@ -108,6 +134,31 @@ class PostNLClient:
     def send_sale_order(self, order):
         self._validate_config()
         order.ensure_one()
+
+        # ✅ URL GUARD
+        if not self._is_instance_allowed():
+            # Keep logging in your existing order log model if available
+            try:
+                self.env['postnl.order.log'].sudo().create({
+                    'sale_order_id': order.id,
+                    'order_name': order.name,
+                    'destination_country_id': (order.partner_shipping_id.country_id or order.partner_id.country_id).id,
+                    'total_weight_kg': 0.0,
+                    'product_code': '',
+                    'endpoint_url': self._get_param('postnl.api_url'),
+                    'request_payload': json.dumps({
+                        'blocked': True,
+                        'reason': 'Blocked by URL guard',
+                        'web_base_url': self.icp.get_param("web.base.url"),
+                        'allowed_base_urls': self.icp.get_param("postnl.allowed_base_urls"),
+                    }, ensure_ascii=False),
+                    'success': False,
+                    'http_status': 0,
+                    'error_message': 'Blocked by URL guard',
+                })
+            except Exception:
+                pass
+            return False
 
         ship_partner = order.partner_shipping_id or order.partner_id
         inv_partner = order.partner_invoice_id or order.partner_id
