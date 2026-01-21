@@ -1,0 +1,118 @@
+<section class="oe_container">
+  <div class="oe_row oe_spaced">
+    <h2>Odoo – PostNL Shipping Integration</h2>
+    <p>
+      This module connects your Odoo system with the PostNL shipping carrier,
+      enabling a seamless shipping experience directly from Odoo. With real-time
+      shipping rates, automated label generation, tracking, and shipping status updates,
+      businesses can streamline logistics without leaving the Odoo interface.
+    </p>
+  </div>
+
+  <div class="oe_row oe_spaced">
+    <h3>Core Features</h3>
+    <ul>
+      <li>Connect Odoo with PostNL via API to manage shipping carriers.</li>
+      <li>Fetch real-time shipping rates based on customer address and warehouse location.</li>
+      <li>Generate shipping labels directly from Odoo delivery orders.</li>
+      <li>Retrieve and store PostNL tracking numbers for all shipments.</li>
+      <li>Track and trace shipment status without leaving Odoo.</li>
+      <li>Support for multiple packages per shipment.</li>
+      <li>Automatic update of delivery order with PostNL information.</li>
+    </ul>
+    <p>
+      This integration removes the need to manually use the PostNL dashboard,
+      automating key parts of your logistics flow. :contentReference[oaicite:0]{index=0}
+    </p>
+  </div>
+
+  <div class="oe_row oe_spaced">
+    <h3>Dependencies</h3>
+    <ul>
+      <li><code>stock</code> – Inventory operations</li>
+      <li><code>sale_management</code> – Sales orders</li>
+      <li><code>delivery</code> – Delivery carrier framework</li>
+      <li><code>account</code> – Invoicing and billing</li>
+      <li><code>base</code> – Core Odoo features</li>
+    </ul>
+  </div>
+
+  <div class="oe_row oe_spaced">
+    <h3>Installation</h3>
+    <ol>
+      <li>Download or clone the repository into your Odoo custom addons directory:</li>
+      <pre><code>git clone https://github.com/devhassan17/Odoo-PostNl-Integration.git</code></pre>
+      <li>Update the apps list in Odoo (Apps → Update Apps List).</li>
+      <li>Install the module named <strong>PostNL Shipping Integration</strong>.</li>
+      <li>Restart the Odoo server if necessary.</li>
+    </ol>
+  </div>
+
+  <div class="oe_row oe_spaced">
+    <h3>Configuration</h3>
+    <p>
+      Once installed, configure the PostNL delivery service in Odoo:
+    </p>
+    <ol>
+      <li>Go to Inventory → Configuration → Delivery Methods.</li>
+      <li>Create a new delivery method and select <strong>PostNL</strong> as the provider.</li>
+      <li>Enter your PostNL API credentials (API key, account number, etc.).</li>
+      <li>Adjust pricing, package defaults, and service options as needed.</li>
+      <li>Save and publish the delivery method.</li>
+    </ol>
+    <p>
+      After configuration, PostNL will be available as a delivery option on sales orders
+      and eCommerce checkouts.
+    </p>
+  </div>
+
+  <div class="oe_row oe_spaced">
+    <h3>How It Works</h3>
+    <ul>
+      <li>Select PostNL as the delivery method on a Sales Order or Website Order.</li>
+      <li>Get live rates and apply shipping costs to the order.</li>
+      <li>Confirm the delivery order to generate a shipping label via PostNL API.</li>
+      <li>After the label is created, the tracking number is stored in the delivery order.</li>
+      <li>Track shipment progress directly from Odoo or via the PostNL track page.</li>
+    </ul>
+    <p>
+      All PostNL data is updated in Odoo so you can manage the entire shipping lifecycle
+      from order to delivery without switching platforms. :contentReference[oaicite:1]{index=1}
+    </p>
+  </div>
+
+  <div class="oe_row oe_spaced">
+    <h3>Benefits</h3>
+    <ul>
+      <li>Reduce manual processes and save time on logistics and fulfillment.</li>
+      <li>Improve accuracy and eliminate errors in shipping cost calculation.</li>
+      <li>Gain visibility into shipment status from within Odoo.</li>
+      <li>Offer customers real-time delivery options and tracking updates.</li>
+    </ul>
+  </div>
+
+  <div class="oe_row oe_spaced">
+    <h3>Security</h3>
+    <ul>
+      <li>Secure storage of PostNL API credentials.</li>
+      <li>Communication with PostNL APIs uses HTTPS.</li>
+      <li>Role-based access control for delivery and shipping configuration screens.</li>
+    </ul>
+  </div>
+
+  <div class="oe_row oe_spaced">
+    <h3>Support & Contribution</h3>
+    <p>
+       For support, customization, or questions, contact the module developer at:
+      <br/>
+      <a href="mailto:programmer.alihassan@gmail.com">programmer.alihassan@gmail.com</a>
+    </p>
+  </div>
+
+  <div class="oe_row oe_spaced">
+    <h3>License</h3>
+    <p>
+      This module is open-source. Please refer to the repository for license details.
+    </p>
+  </div>
+</section>

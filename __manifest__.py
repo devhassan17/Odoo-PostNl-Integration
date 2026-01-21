@@ -2,11 +2,14 @@
 {
     'name': 'Odoo-PostNl Integration',
     'summary': 'Send confirmed sales orders to PostNL Fulfilment API',
-    'version': '18.0.1.0.0',
+    'version': '1.0.0',
     'category': 'Sales',
     'images': ['static/description/icon.png'],
-    'author': 'Ali Hassan17',
-    'license': 'LGPL-3',
+    "author": "Managemyweb.co",
+    "website": "https://fairchain.org/Odoo-PostNl-Integration/",
+    "category": "Warehouse",
+    "license": "LGPL-3",
+    "images": ["static/description/banner.png"],
 
     'depends': [
         'sale_management',
@@ -33,7 +36,9 @@
     'installable': True,
     'application': True,
     'auto_install': False,
-
+    "support": "programmer.alihassan@gmail.com",
+    "price": 199.99,
+    "currency": "USD",
     'external_dependencies': {
         'python': ['requests'],
     },
